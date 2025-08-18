@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
 });
-
 
 export const metadata: Metadata = {
   title: {
     template: "%s - Awn",
     absolute: "Awn",
   },
-  description: "Awn helps users easily search and discover announcements. Find the information you need quickly with our powerful search functionality.",
+  description:
+    "Awn helps users easily search and discover announcements. Find the information you need quickly with our powerful search functionality.",
 };
 
 export default function RootLayout({
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
         {children}
+        <Toaster duration={3000} richColors />
       </body>
     </html>
   );
