@@ -54,10 +54,6 @@
   --container-padding: 2rem;
   --container-max-width: 1400px;
 
-  /* Background Images */
-  --bg-hero-gradient: var(--hero-gradient);
-  --bg-subtle-gradient: var(--subtle-gradient);
-
   /* Box Shadows */
   --shadow-card: var(--card-shadow);
   --shadow-hero: var(--hero-shadow);
@@ -219,8 +215,8 @@
 }
 
 /* Utilities */
-/* @layer utilities {
-  .animate-float {
+@layer utilities {
+  /* .animate-float {
     animation: float 3s ease-in-out infinite;
   }
 
@@ -234,11 +230,11 @@
 
   .animate-accordion-up {
     animation: accordion-up 0.3s ease-out;
-  }
+  } */
 
-  .transition-smooth {
+  /* .transition-smooth {
     transition: var(--smooth-transition);
-  }
+  } */
 
   .bg-hero-gradient {
     background-image: var(--hero-gradient);
@@ -248,14 +244,14 @@
     background-image: var(--subtle-gradient);
   }
 
-  .shadow-card {
+  /* .shadow-card {
     box-shadow: var(--card-shadow);
   }
 
   .shadow-hero {
     box-shadow: var(--hero-shadow);
-  }
-} */
+  } */
+}
 
 @layer base {
   * {
