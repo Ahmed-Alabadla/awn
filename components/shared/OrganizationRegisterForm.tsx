@@ -25,6 +25,16 @@ export default function OrganizationRegisterForm() {
     formState: { errors },
   } = useForm<OrganizationRegisterValues>({
     resolver: zodResolver(organizationRegisterSchema),
+    defaultValues: {
+      phone: "",
+      email: "",
+      organizationName: "",
+      password: "",
+      confirmPassword: "",
+      description: "",
+      location: "",
+      website: "",
+    },
   });
 
   const onSubmit = async (data: OrganizationRegisterValues) => {
@@ -186,7 +196,18 @@ export default function OrganizationRegisterForm() {
               type="tel"
               placeholder="+966 50 123 4567"
               {...register("phone")}
+              aria-invalid={!!errors.phone}
+              aria-describedby={errors.phone ? "phone-error" : undefined}
             />
+            {errors.phone && (
+              <p
+                id="phone-error"
+                className="text-sm text-destructive"
+                role="alert"
+              >
+                {errors.phone.message}
+              </p>
+            )}
           </div>
 
           {/* Website */}
@@ -213,9 +234,7 @@ export default function OrganizationRegisterForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="location">
-            Location <span className="text-destructive">*</span>
-          </Label>
+          <Label htmlFor="location">Location</Label>
           <Input
             id="location"
             type="text"
@@ -241,7 +260,7 @@ export default function OrganizationRegisterForm() {
           />
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" variant="hero">
           {/* <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Registering...

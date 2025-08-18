@@ -21,6 +21,13 @@ export default function UserRegisterForm() {
     formState: { errors },
   } = useForm<UserRegisterValues>({
     resolver: zodResolver(userRegisterSchema),
+    defaultValues: {
+      phone: "",
+      email: "",
+      name: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 
   const onSubmit = async (data: UserRegisterValues) => {
@@ -180,10 +187,21 @@ export default function UserRegisterForm() {
             type="tel"
             placeholder="+966 50 123 4567"
             {...register("phone")}
+            aria-invalid={!!errors.phone}
+            aria-describedby={errors.phone ? "phone-error" : undefined}
           />
+          {errors.phone && (
+            <p
+              id="phone-error"
+              className="text-sm text-destructive"
+              role="alert"
+            >
+              {errors.phone.message}
+            </p>
+          )}
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" variant="hero">
           {/* <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Registering...
