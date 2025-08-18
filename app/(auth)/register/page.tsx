@@ -29,7 +29,7 @@ export default function RegisterPage() {
           </TabsList>
           <TabsContent value="user">
             <CardHeader className="text-center space-y-2 mt-2">
-              <CardTitle className="text-2xl font-bold text-primary">
+              <CardTitle className="text-2xl font-bold block bg-hero-gradient bg-clip-text text-transparent ">
                 User Registration
               </CardTitle>
               <CardDescription>
@@ -42,7 +42,7 @@ export default function RegisterPage() {
           </TabsContent>
           <TabsContent value="organization">
             <CardHeader className="text-center space-y-2 mt-2">
-              <CardTitle className="text-2xl font-bold text-primary">
+              <CardTitle className="text-2xl font-bold block bg-hero-gradient bg-clip-text text-transparent">
                 Organization Registration
               </CardTitle>
               <CardDescription>
