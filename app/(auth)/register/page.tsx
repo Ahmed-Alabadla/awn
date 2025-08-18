@@ -18,7 +18,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
       <Card className="w-full max-w-2xl shadow-elegant">
-        <Tabs className="px-6">
+        <Tabs className="px-6" defaultValue="user">
           <TabsList className="w-full">
             <TabsTrigger value="user" className="cursor-pointer">
               User
