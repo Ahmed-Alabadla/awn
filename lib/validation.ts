@@ -18,6 +18,8 @@ export const phoneWithCountrySchema = optionalStringSchema.refine(
   }
 );
 
+
+// User registration schema
 export const userRegisterSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
@@ -31,6 +33,7 @@ export const userRegisterSchema = z.object({
 export type UserRegisterValues = z.infer<typeof userRegisterSchema>;
 
 
+// Organization registration schema
 export const organizationRegisterSchema = z.object({
   organizationName: z.string().min(2, 'Organization name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
@@ -47,9 +50,26 @@ export const organizationRegisterSchema = z.object({
 export type OrganizationRegisterValues = z.infer<typeof organizationRegisterSchema>;
 
 
+// Login schema
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
-
 export type LoginValues = z.infer<typeof loginSchema>;
+
+
+// Forgot Password schema
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+})
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
+
+// Reset Password schema
+export const resetPasswordSchema = z.object({
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string().min(8, "Please confirm your password"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
