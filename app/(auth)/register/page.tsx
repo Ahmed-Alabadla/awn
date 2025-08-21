@@ -16,46 +16,44 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
-      <Card className="w-full max-w-2xl shadow-elegant">
-        <Tabs className="px-6" defaultValue="user">
-          <TabsList className="w-full">
-            <TabsTrigger value="user" className="cursor-pointer">
-              User
-            </TabsTrigger>
-            <TabsTrigger value="organization" className="cursor-pointer ">
-              Organization
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="user">
-            <CardHeader className="text-center space-y-2 mt-2">
-              <CardTitle className="text-2xl font-bold block bg-hero-gradient bg-clip-text text-transparent ">
-                User Registration
-              </CardTitle>
-              <CardDescription>
-                Please fill in the details to register as a user.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <UserRegisterForm />
-            </CardContent>
-          </TabsContent>
-          <TabsContent value="organization">
-            <CardHeader className="text-center space-y-2 mt-2">
-              <CardTitle className="text-2xl font-bold block bg-hero-gradient bg-clip-text text-transparent">
-                Organization Registration
-              </CardTitle>
-              <CardDescription>
-                Join our platform to connect with those in need and make a
-                difference
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <OrganizationRegisterForm />
-            </CardContent>
-          </TabsContent>
-        </Tabs>
-      </Card>
-    </div>
+    <Card className="w-full max-w-2xl shadow-elegant">
+      <Tabs className="px-6" defaultValue="user">
+        <TabsList className="w-full">
+          <TabsTrigger value="user" className="cursor-pointer">
+            User
+          </TabsTrigger>
+          <TabsTrigger value="organization" className="cursor-pointer ">
+            Organization
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="user">
+          <CardHeader className="text-center space-y-2 mt-2">
+            <CardTitle className="text-2xl font-bold block bg-hero-gradient bg-clip-text text-transparent ">
+              User Registration
+            </CardTitle>
+            <CardDescription>
+              Please fill in the details to register as a user.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UserRegisterForm />
+          </CardContent>
+        </TabsContent>
+        <TabsContent value="organization">
+          <CardHeader className="text-center space-y-2 mt-2">
+            <CardTitle className="text-2xl font-bold block bg-hero-gradient bg-clip-text text-transparent">
+              Organization Registration
+            </CardTitle>
+            <CardDescription>
+              Join our platform to connect with those in need and make a
+              difference
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <OrganizationRegisterForm />
+          </CardContent>
+        </TabsContent>
+      </Tabs>
+    </Card>
   );
 }
