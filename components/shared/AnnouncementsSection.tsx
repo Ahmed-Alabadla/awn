@@ -51,7 +51,7 @@ const announcements: Announcement[] = [
 
 export default function AnnouncementsSection() {
     return (
-        <section className=" py-16 px-6 lg:px-12">
+        <section className="py-16  ">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold text-gray-900">
