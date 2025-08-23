@@ -14,7 +14,7 @@ const floatAnimation: TargetAndTransition = {
 
 export default function HeroSection() {
     return (
-        <section className="relative flex flex-col lg:flex-row items-center justify-between max-w-7xl mx-auto px-6 lg:px-12 py-16 bg-subtle-gradient rounded-2xl">
+        <section className="relative flex flex-col lg:flex-row items-center justify-between max-w-7xl mx-auto px-6 lg:px-0 py-16 rounded-2xl">
             {/* Left Side - Text Content */}
             <div className="max-w-xl text-center lg:text-left">
                 <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
