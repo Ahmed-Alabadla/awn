@@ -92,7 +92,6 @@ export default function AnnouncementsSection() {
                                     </span>
                                 </div>
 
-                                {/* Progress Bar */}
                                 <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
                                     <div
                                         className="bg-teal-500 h-2 rounded-full"
@@ -104,7 +103,6 @@ export default function AnnouncementsSection() {
                                 </div>
                             </div>
 
-                            {/* Buttons */}
                             <div className="mt-6 flex justify-between gap-4">
                                 <Button className="bg-teal-600 hover:bg-teal-700 text-white w-1/2">
                                     Apply Now

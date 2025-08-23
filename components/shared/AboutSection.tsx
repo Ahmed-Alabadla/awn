@@ -4,12 +4,11 @@ export default function AboutSection() {
     return (
         <section className="py-16 px-6">
             <div className="max-w-7xl mx-auto text-center">
-                {/* Title */}
+                
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
                     About <span className="text-teal-600">Awn</span>
                 </h2>
 
-                {/* Subtitle */}
                 <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
                     We are a bridge connecting compassionate institutions with individuals and
                     communities who need support. Our platform facilitates meaningful connections
@@ -17,9 +16,7 @@ export default function AboutSection() {
                 </p>
             </div>
 
-            {/* Stats Section */}
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                {/* Card 1 */}
                 <div className="border rounded-lg shadow-sm p-6 text-center bg-white hover:shadow-md transition">
                     <div className="flex justify-center mb-4">
                         <div className="bg-teal-100 text-teal-600 rounded-full p-3">
@@ -41,7 +38,6 @@ export default function AboutSection() {
                     <p className="text-gray-500">Lives Impacted</p>
                 </div>
 
-                {/* Card 3 */}
                 <div className="border rounded-lg shadow-sm p-6 text-center bg-white hover:shadow-md transition">
                     <div className="flex justify-center mb-4">
                         <div className="bg-blue-100 text-blue-600 rounded-full p-3">
@@ -64,7 +60,6 @@ export default function AboutSection() {
                 </div>
             </div>
 
-            {/* Mission Section */}
             <div className="max-w-4xl mx-auto mt-16 text-left">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h3>
                 <p className="text-gray-600 leading-relaxed">

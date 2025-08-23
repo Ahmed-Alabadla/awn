@@ -15,7 +15,6 @@ const floatAnimation: TargetAndTransition = {
 export default function HeroSection() {
     return (
         <section className="relative flex flex-col lg:flex-row items-center justify-between max-w-7xl mx-auto px-6 lg:px-0 py-16 rounded-2xl">
-            {/* Left Side - Text Content */}
             <div className="max-w-xl text-center lg:text-left">
                 <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
                     Connecting <span className="text-blue-500">Hearts & Hope</span>
@@ -32,7 +31,6 @@ export default function HeroSection() {
                     </Button>
                 </div>
 
-                {/* Stats */}
                 <div className="mt-10 grid grid-cols-3 gap-4 text-center lg:text-left">
                     <div>
                         <p className="text-2xl font-bold text-gray-900">500+</p>
@@ -49,7 +47,6 @@ export default function HeroSection() {
                 </div>
             </div>
 
-            {/* Right Side - Animated Cards */}
             <div className="mt-12 lg:mt-0 flex flex-col gap-6">
                 <motion.div
                     className="bg-white shadow-xl rounded-xl p-4 w-90"
