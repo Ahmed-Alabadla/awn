@@ -36,7 +36,8 @@ export default function Navbar() {
               <Button
                 variant={pathname === "/announcements" ? "default" : "ghost"}
               >
-                Announcements
+                <Link href="/announcements">Announcements</Link>
+ 
               </Button>
               <Button variant="ghost" asChild>
                 <Link href="#about">About</Link>
