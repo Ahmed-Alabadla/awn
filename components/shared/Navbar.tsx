@@ -33,13 +33,13 @@ export default function Navbar() {
               <Button variant={pathname === "/" ? "default" : "ghost"}>
                 Home
               </Button>
-              <Button variant={pathname === "/about" ? "default" : "ghost"}>
-                About
-              </Button>
               <Button
                 variant={pathname === "/announcements" ? "default" : "ghost"}
               >
                 Announcements
+              </Button>
+              <Button variant="ghost" asChild>
+                <Link href="#about">About</Link>
               </Button>
             </div>
           </div>
