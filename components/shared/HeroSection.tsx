@@ -1,103 +1,129 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { motion, TargetAndTransition } from "framer-motion";
+import { ArrowRight, Heart, Shield, Users } from "lucide-react";
 import Link from "next/link";
-
-const floatAnimation: TargetAndTransition = {
-  y: [0, -10, 0],
-  transition: {
-    duration: 3,
-    repeat: Infinity,
-    ease: "easeInOut",
-  },
-};
 
 export default function HeroSection() {
   return (
-    <section className="relative flex flex-col lg:flex-row items-center justify-between max-w-7xl mx-auto px-6 lg:px-0 py-16 rounded-2xl">
-      <div className="max-w-xl text-center lg:text-left">
-        <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-          Connecting{" "}
-          <span className="bg-hero-gradient bg-clip-text text-transparent">
-            Hearts & Hope
-          </span>
-        </h1>
-        <p className="text-gray-600 mt-4 text-lg">
-          Bridge the gap between aid-giving institutions and individuals in
-          need. Together, we create a world where help reaches everyone who
-          needs it.
-        </p>
-        <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-          <Button className=" text-white px-6 py-3 text-lg" variant="hero">
-            Find an Aids →
-          </Button>
-          <Button className="px-6 py-3 text-lg " variant="outline" asChild>
-            <Link href="/register/#organization">Become a Partner →</Link>
-          </Button>
+    <section className="relative overflow-hidden bg-subtle-gradient py-20 lg:py-24">
+      {/* <div className="fixed inset-0 bg-hero-gradient opacity-5 pointer-events-none"></div> */}
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Content */}
+          <div className="space-y-8 animate-fade-in">
+            <div className="space-y-4">
+              <h1 className="text-4xl lg:text-6xl font-bold text-foreground leading-tight">
+                Connecting
+                <span className="block bg-hero-gradient bg-clip-text text-transparent">
+                  Hearts & Hope
+                </span>
+              </h1>
+              <p className="text-xl text-muted-foreground leading-relaxed">
+                Bridge the gap between aid-giving institutions and individuals
+                in need. Together, we create a world where help reaches everyone
+                who needs it.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button className=" text-white px-6 py-3 text-lg" variant="hero">
+                Find an Aids
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button className="px-6 py-3 text-lg " variant="outline" asChild>
+                <Link href="/register/#organization">Become a Partner →</Link>
+              </Button>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-border">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">500+</div>
+                <div className="text-sm text-muted-foreground">
+                  Institutions
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">10,000+</div>
+                <div className="text-sm text-muted-foreground">
+                  People Helped
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">$2M+</div>
+                <div className="text-sm text-muted-foreground">
+                  Aid Distributed
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Visual */}
+          <div className="relative lg:pl-8">
+            <div className="relative z-10 space-y-6">
+              {/* Floating Cards */}
+              <div className="bg-card p-6 rounded-xl shadow-card animate-float">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Heart className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-card-foreground">
+                      Emergency Medical Aid
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Available 24/7
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="bg-card p-6 rounded-xl shadow-card animate-float ml-8"
+                style={{ animationDelay: "1s" }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-accent" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-card-foreground">
+                      Verified Institutions
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Trusted partners
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="bg-card p-6 rounded-xl shadow-card animate-float"
+                style={{ animationDelay: "2s" }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-primary-glow/10 rounded-lg flex items-center justify-center">
+                    <Users className="w-6 h-6 text-primary-glow" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-card-foreground">
+                      Community Support
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Stronger together
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Background decoration */}
+            <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
+            <div className="absolute -bottom-8 -left-4 w-32 h-32 bg-accent/5 rounded-full blur-xl"></div>
+          </div>
         </div>
-
-        <div className="mt-10 grid grid-cols-3 gap-4 text-center lg:text-left">
-          <div>
-            <p className="text-2xl font-bold text-gray-900">500+</p>
-            <p className="text-gray-500 text-sm">Institutions</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-gray-900">10,000+</p>
-            <p className="text-gray-500 text-sm">People Helped</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-gray-900">$2M+</p>
-            <p className="text-gray-500 text-sm">Aid Distributed</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-12 lg:mt-0 flex flex-col gap-6">
-        <motion.div
-          className="bg-white shadow-xl rounded-xl p-4 w-90"
-          animate={floatAnimation}
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-blue-500 text-2xl">💙</span>
-            <div>
-              <h3 className="font-semibold text-gray-800">
-                Emergency Medical Aid
-              </h3>
-              <p className="text-gray-500 text-sm">Available 24/7</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="bg-white shadow-xl rounded-xl p-4 w-90"
-          animate={floatAnimation}
-          transition={{ delay: 0.3, duration: 3, repeat: Infinity }}
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-green-500 text-2xl">🛡️</span>
-            <div>
-              <h3 className="font-semibold text-gray-800">
-                Verified Institutions
-              </h3>
-              <p className="text-gray-500 text-sm">Trusted partners</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="bg-white shadow-xl rounded-xl p-4 w-90"
-          animate={floatAnimation}
-          transition={{ delay: 0.6, duration: 3, repeat: Infinity }}
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-blue-400 text-2xl">👥</span>
-            <div>
-              <h3 className="font-semibold text-gray-800">Community Support</h3>
-              <p className="text-gray-500 text-sm">Stronger together</p>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
