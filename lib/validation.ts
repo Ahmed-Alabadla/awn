@@ -73,3 +73,45 @@ export const resetPasswordSchema = z.object({
   path: ["confirmPassword"],
 });
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+
+
+// Profile schema
+export const profileSchema = z.object({
+  name: z
+    .string()
+    .min(3, "Full name must be at least 3 characters")
+    .max(100, "Full name must be at most 100 characters")
+    .optional(),
+
+  phone: z
+    .string()
+    .min(6, { message: "Phone number must be at least 6 characters long" })
+    .max(20, { message: "Phone number must be at most 20 characters long" })
+    .regex(/^\+\d{6,}$/, {
+      message:
+        "phone must be a valid international number with country code (e.g., +970597762451)",
+    })
+    .optional(),
+
+});
+export type ProfileFormValues = z.infer<typeof profileSchema>;
+
+// Change Password Form
+export const changePasswordSchema = z
+  .object({
+    oldPassword: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
+        "Password must include uppercase, lowercase, number, and special character (@$!%*?&)"
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export  type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
