@@ -13,3 +13,32 @@ export interface Announcement {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  phone?: string;
+  profile_image?: string;
+  role: string;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface AuthResponse {
+  access: string;
+  refresh: string;
+  user: User;
+}
+
+export interface ApiError {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+      errors?: Record<string, string[]>;
+    };
+  };
+  message?: string;
+}
