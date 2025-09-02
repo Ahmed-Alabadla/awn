@@ -5,6 +5,8 @@ import AnnouncementCard from "@/components/shared/AnnouncementCard";
 import { Announcement } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import FavoritesSection from "@/components/shared/FavoritesSection";
+import NotificationSection from "@/components/shared/NotificationSection";
 
 const PAGE_SIZE = 6;
 const NAV_ITEMS = ["Search Aid", "Favorites", "Notifications", "Reports"];
@@ -208,26 +210,32 @@ export default function AnnouncementPage() {
                     )}
 
                     {activeTab === "Favorites" && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {favorites.length > 0 ? (
-                                favorites.map((announcement) => (
-                                    <AnnouncementCard
-                                        key={announcement.id}
-                                        announcement={announcement}
-                                        isFavorite={true}
-                                        onToggleFavorite={() => toggleFavorite(announcement)}
-                                    />
-                                ))
-                            ) : (
-                                <div className="col-span-3 text-center text-muted-foreground py-12">
-                                    No favorites yet.
-                                </div>
-                            )}
-                        </div>
+                        <FavoritesSection favorites={favorites} toggleFavorite={toggleFavorite} />
                     )}
+
                     {activeTab === "Notifications" && (
-                        <div className="text-center py-12">🔔 Notifications panel coming soon</div>
+                        <NotificationSection
+                            notifications={[
+                                {
+                                    id: 1,
+                                    title: "Request Approved",
+                                    description:
+                                        "Your educational support request has been approved by Future Leaders Institute.",
+                                    timeAgo: "2 hours ago",
+                                    color: "bg-sky-500",
+                                },
+                                {
+                                    id: 2,
+                                    title: "New Opportunity Available",
+                                    description:
+                                        "A new medical aid program matching your profile has been posted.",
+                                    timeAgo: "1 day ago",
+                                    color: "bg-green-500",
+                                },
+                            ]}
+                        />
                     )}
+
                     {activeTab === "Reports" && (
                         <div className="text-center py-12">📊 Reports dashboard coming soon</div>
                     )}
