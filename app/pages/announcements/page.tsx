@@ -19,6 +19,19 @@ function calculateDaysLeft(endDate: Date): number {
 }
 
 export default function AnnouncementPage() {
+
+    const [favorites, setFavorites] = useState<Announcement[]>([]);
+    function toggleFavorite(announcement: Announcement) {
+        setFavorites((prev) => {
+            const isAlreadyFavorite = prev.some((a) => a.id === announcement.id);
+            if (isAlreadyFavorite) {
+                return prev.filter((a) => a.id !== announcement.id);
+            } else {
+                return [...prev, announcement];
+            }
+        });
+    }
+
     const announcements: Announcement[] = [
         {
             id: 1,
@@ -161,7 +174,10 @@ export default function AnnouncementPage() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {paginated.length > 0 ? (
                                     paginated.map((announcement) => (
-                                        <AnnouncementCard key={announcement.id} announcement={announcement} />
+                                        <AnnouncementCard key={announcement.id}
+                                            announcement={announcement}
+                                            isFavorite={favorites.some((a) => a.id === announcement.id)}
+                                            onToggleFavorite={() => toggleFavorite(announcement)} />
                                     ))
                                 ) : (
                                     <div className="col-span-3 text-center text-muted-foreground py-12">
@@ -192,7 +208,22 @@ export default function AnnouncementPage() {
                     )}
 
                     {activeTab === "Favorites" && (
-                        <div className="text-center py-12">⭐ Your saved favorites will appear here</div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {favorites.length > 0 ? (
+                                favorites.map((announcement) => (
+                                    <AnnouncementCard
+                                        key={announcement.id}
+                                        announcement={announcement}
+                                        isFavorite={true}
+                                        onToggleFavorite={() => toggleFavorite(announcement)}
+                                    />
+                                ))
+                            ) : (
+                                <div className="col-span-3 text-center text-muted-foreground py-12">
+                                    No favorites yet.
+                                </div>
+                            )}
+                        </div>
                     )}
                     {activeTab === "Notifications" && (
                         <div className="text-center py-12">🔔 Notifications panel coming soon</div>

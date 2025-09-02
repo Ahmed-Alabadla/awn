@@ -16,12 +16,14 @@ import { Announcement } from "@/lib/types";
 
 export default function AnnouncementCard({
   announcement,
+  isFavorite,
+  onToggleFavorite,
 }: {
-  announcement: Announcement;
+    announcement: Announcement;
+    isFavorite: boolean;
+    onToggleFavorite: () => void;
 }) {
-  // Local state for favorite toggle
-  const [isFavorite, setIsFavorite] = useState(false);
-
+  
   // Calculate days left until deadline
   const calculateDaysLeft = (endDate: Date): string => {
     const today = new Date();
@@ -58,15 +60,12 @@ export default function AnnouncementCard({
 
           {/* Favorite button */}
           <button
-            onClick={() => setIsFavorite(!isFavorite)}
-            className={`transition ${isFavorite ? "text-red-600" : "text-gray-400 hover:text-red-500"
-              }`}
+            onClick={onToggleFavorite}
+            className={`transition ${isFavorite ? "text-red-600" : "text-gray-400 hover:text-red-500"}`}
           >
-            <Heart
-              className="w-5 h-5"
-              fill={isFavorite ? "currentColor" : "none"}
-            />
+            <Heart className="w-5 h-5" fill={isFavorite ? "currentColor" : "none"} />
           </button>
+
 
         </div>
 
