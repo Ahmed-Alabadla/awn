@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Announcement } from "@/lib/types";
 import AnnouncementCard from "./AnnouncementCard";
 import { ArrowRight } from "lucide-react";
+import { useState } from "react";
 
 const announcements: Announcement[] = [
   {
@@ -57,6 +58,18 @@ const announcements: Announcement[] = [
 ];
 
 export default function FeaturedAnnouncements() {
+  const [favorites, setFavorites] = useState<Announcement[]>([]);
+  function toggleFavorite(announcement: Announcement) {
+    setFavorites((prev) => {
+      const isAlreadyFavorite = prev.some((a) => a.id === announcement.id);
+      if (isAlreadyFavorite) {
+        return prev.filter((a) => a.id !== announcement.id);
+      } else {
+        return [...prev, announcement];
+      }
+    });
+  }
+
   return (
     <section className="py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,6 +88,8 @@ export default function FeaturedAnnouncements() {
             <AnnouncementCard
               key={announcement.id}
               announcement={announcement}
+              isFavorite={favorites.some((a) => a.id === announcement.id)}
+              onToggleFavorite={() => toggleFavorite(announcement)}
             />
           ))}
         </div>
