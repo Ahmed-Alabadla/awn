@@ -29,13 +29,14 @@ export interface User {
 export interface AuthResponse {
   access: string;
   refresh: string;
-  user: User;
 }
 
 export interface ApiError {
   response?: {
     status?: number;
+    statusText?: string;
     data?: {
+      detail?: string;
       message?: string;
       errors?: Record<string, string[]>;
     };

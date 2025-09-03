@@ -3,16 +3,18 @@ import { useState } from "react";
 import { userRegisterSchema, UserRegisterValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function UserRegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const { userRegister, isUserRegisterPending } = useAuth();
 
   const {
     register,
@@ -26,19 +28,12 @@ export default function UserRegisterForm() {
       email: "",
       name: "",
       password: "",
-      confirmPassword: "",
+      password_confirm: "",
     },
   });
 
   const onSubmit = async (data: UserRegisterValues) => {
-    toast.success("Registration Submitted", {
-      description:
-        "Registration submitted. You will receive a confirmation email shortly.",
-    });
-    console.log(data);
-    // toast.error("Registration Failed", {
-    //   description:  "An error occurred during registration",
-    // })
+    userRegister(data);
   };
 
   return (
@@ -54,6 +49,7 @@ export default function UserRegisterForm() {
               id="fullName"
               placeholder="Enter your full name"
               {...register("name")}
+              disabled={isUserRegisterPending}
               aria-invalid={!!errors.name}
               aria-describedby={errors.name ? "name-error" : undefined}
             />
@@ -75,6 +71,7 @@ export default function UserRegisterForm() {
             <Input
               id="email"
               type="email"
+              disabled={isUserRegisterPending}
               placeholder="user@example.com"
               {...register("email")}
               aria-invalid={!!errors.email}
@@ -104,6 +101,7 @@ export default function UserRegisterForm() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Minimum 8 characters"
                 {...register("password")}
+                disabled={isUserRegisterPending}
                 aria-invalid={!!errors.password}
                 aria-describedby={
                   errors.password ? "password-error" : undefined
@@ -144,10 +142,11 @@ export default function UserRegisterForm() {
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
-                {...register("confirmPassword")}
-                aria-invalid={!!errors.confirmPassword}
+                {...register("password_confirm")}
+                disabled={isUserRegisterPending}
+                aria-invalid={!!errors.password_confirm}
                 aria-describedby={
-                  errors.confirmPassword ? "confirm-password-error" : undefined
+                  errors.password_confirm ? "confirm-password-error" : undefined
                 }
               />
               <Button
@@ -167,13 +166,13 @@ export default function UserRegisterForm() {
                 )}
               </Button>
             </div>
-            {errors.confirmPassword && (
+            {errors.password_confirm && (
               <p
                 id="confirm-password-error"
                 className="text-sm text-destructive"
                 role="alert"
               >
-                {errors.confirmPassword.message}
+                {errors.password_confirm.message}
               </p>
             )}
           </div>
@@ -187,6 +186,7 @@ export default function UserRegisterForm() {
             type="tel"
             placeholder="+966 50 123 4567"
             {...register("phone")}
+            disabled={isUserRegisterPending}
             aria-invalid={!!errors.phone}
             aria-describedby={errors.phone ? "phone-error" : undefined}
           />
@@ -202,11 +202,16 @@ export default function UserRegisterForm() {
         </div>
 
         <Button type="submit" className="w-full" variant="hero">
-          {/* <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Registering...
-          </> */}
-          Register
+          <>
+            {isUserRegisterPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Registering...
+              </>
+            ) : (
+              "Register"
+            )}
+          </>
         </Button>
       </form>
       <div className="mt-6 text-center">

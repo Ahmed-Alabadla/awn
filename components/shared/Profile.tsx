@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   Card,
@@ -22,8 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { Button } from "@/components/ui/button";
-// import AvatarUpload from "@/components/avatar-upload";
-// import type { FileWithPreview } from "@/hooks/use-file-upload";
+
 import { Separator } from "@/components/ui/separator";
 import {
   AlertDialog,
@@ -43,11 +42,30 @@ import {
   profileSchema,
 } from "@/lib/validation";
 import { usePasswordStrength } from "@/hooks/use-password-strength";
+import { useAuth } from "@/hooks/useAuth";
+import { ImageDropzone } from "./ImageDropzone";
 
 export default function Profile() {
+  const { user } = useAuth();
+
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      profile_image: undefined,
+    },
   });
+
+  useEffect(() => {
+    if (user) {
+      profileForm.reset({
+        name: user.name || "",
+        phone: user.phone || "",
+        profile_image: user.profile_image || undefined,
+      });
+    }
+  }, [user, profileForm]);
 
   const changePasswordForm = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(changePasswordSchema),
@@ -58,6 +76,7 @@ export default function Profile() {
     usePasswordStrength(passwordValue);
 
   const onSubmitUpdateProfile = (data: ProfileFormValues) => {
+    console.log(profileForm);
     console.log(data);
   };
   const onSubmitChangePassword = (data: ChangePasswordFormValues) => {
@@ -76,24 +95,26 @@ export default function Profile() {
             onSubmit={profileForm.handleSubmit(onSubmitUpdateProfile)}
             className="space-y-4"
           >
-            {/* <FormField
+            <FormField
               control={profileForm.control}
-              name="avatar"
+              name="profile_image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Avatar</FormLabel>
+                  <FormLabel>Profile image</FormLabel>
                   <FormControl>
-                    <AvatarUpload
-                      maxSize={2 * 1024 * 1024}
-                      defaultAvatar={profile?.avatar}
-                      onFileChange={(file: FileWithPreview | null) => field.onChange(file)}
-                      className="mb-2"
+                    <ImageDropzone
+                      width={250}
+                      height={250}
+                      value={field.value ?? undefined}
+                      onChange={(file) => {
+                        field.onChange(file);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
-            /> */}
+            />
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-medium">Profile Information</h3>
@@ -125,14 +146,14 @@ export default function Profile() {
                       id="email"
                       type="email"
                       readOnly
-                      defaultValue="ahmed@example.com"
+                      defaultValue={user?.email || ""}
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="role">Role</Label>
-                    <Input id="role" defaultValue="admin" readOnly />
+                    <Input id="role" defaultValue={user?.role || ""} readOnly />
                   </div>
 
                   <FormField
