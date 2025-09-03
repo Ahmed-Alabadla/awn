@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import FavoritesSection from "@/components/shared/FavoritesSection";
 import NotificationSection from "@/components/shared/NotificationSection";
+import ReportsSection from "@/components/shared/ReportsSection";
 
 const PAGE_SIZE = 6;
 const NAV_ITEMS = ["Search Aid", "Favorites", "Notifications", "Reports"];
@@ -44,6 +45,83 @@ export default function AnnouncementPage() {
             start_date: new Date(),
             end_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
             category_name: "Health",
+            url: "",
+            creator_name: "Admin",
+            status: "active",
+            admin_notes: "",
+            created_at: new Date(),
+            updated_at: new Date(),
+        },
+        {
+            id: 2,
+            title: "Educational Scholarships",
+            organization_name: "Future Leaders Institute",
+            description:
+                "Supporting bright students from underprivileged backgrounds to pursue higher education.",
+            start_date: new Date(),
+            end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            category_name: "Education",
+            url: "",
+            creator_name: "Admin",
+            status: "active",
+            admin_notes: "",
+            created_at: new Date(),
+            updated_at: new Date(),
+        },
+        {
+            id: 3,
+            title: "Food Security Program",
+            organization_name: "Community Care Network",
+            description:
+                "Providing nutritious meals to families facing food insecurity in rural communities.",
+            start_date: new Date(),
+            end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            category_name: "Food",
+            url: "",
+            creator_name: "Admin",
+            status: "active",
+            admin_notes: "",
+            created_at: new Date(),
+            updated_at: new Date(),
+        },
+        {
+            id: 4,
+            title: "Clean Water Initiative",
+            organization_name: "Water for All",
+            description: "Bringing clean water to remote villages.",
+            start_date: new Date(),
+            end_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+            category_name: "Water",
+            url: "",
+            creator_name: "Admin",
+            status: "active",
+            admin_notes: "",
+            created_at: new Date(),
+            updated_at: new Date(),
+        },
+        {
+            id: 5,
+            title: "Disaster Relief Fund",
+            organization_name: "Relief Now",
+            description: "Immediate support for disaster-affected families.",
+            start_date: new Date(),
+            end_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+            category_name: "Relief",
+            url: "",
+            creator_name: "Admin",
+            status: "active",
+            admin_notes: "",
+            created_at: new Date(),
+            updated_at: new Date(),
+        },
+        {
+            id: 6,
+            title: "Women Empowerment Grants",
+            organization_name: "EmpowerHer",
+            description: "Grants for women entrepreneurs.",
+            start_date: new Date(),
+            end_date: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+            category_name: "Empowerment",
             url: "",
             creator_name: "Admin",
             status: "active",
@@ -237,7 +315,8 @@ export default function AnnouncementPage() {
                     )}
 
                     {activeTab === "Reports" && (
-                        <div className="text-center py-12">📊 Reports dashboard coming soon</div>
+                        <ReportsSection />
+                        
                     )}
                 </div>
             </div>
