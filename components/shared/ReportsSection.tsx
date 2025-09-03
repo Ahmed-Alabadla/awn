@@ -38,13 +38,6 @@ export default function ReportsSection() {
       return;
     }
 
-    console.log({
-      reportType,
-      organization: reportType === "organization" ? organization : undefined,
-      title,
-      message,
-    });
-
     toast.success("Your feedback has been submitted successfully!");
 
     // Reset form
