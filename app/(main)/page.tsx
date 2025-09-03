@@ -1,13 +1,18 @@
-import AboutSection from "@/components/shared/AboutSection";
-import FeaturedAnnouncements from "@/components/shared/FeaturedAnnouncements";
-import HeroSection from "@/components/shared/HeroSection";
+import AnnouncementPage from "../pages/announcements/page";
+import LandingPage from "../pages/landing/page";
+
+
 
 export default function Home() {
+  // this role can later come from auth, context, or API
+  const role: string = "user"; // "visitor" | "user" | "admin" | "organization"
+
   return (
-    <div>
-      <HeroSection />
-      <FeaturedAnnouncements />
-      <AboutSection />
-    </div>
+    <>
+      {role === "visitor" && <LandingPage />}
+      {role === "user" && <AnnouncementPage />}
+      {role === "organization" && "Organization Page"}
+      {role === "admin" && "Admin Page"}
+    </>
   );
 }
