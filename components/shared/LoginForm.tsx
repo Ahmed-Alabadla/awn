@@ -3,18 +3,19 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 import { loginSchema, LoginValues } from "@/lib/validation";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const { login, isLoginPending } = useAuth();
 
   const {
     register,
@@ -29,9 +30,7 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: LoginValues) => {
-    console.log("Login Data:", data);
-    toast.success("Login successful!");
-    // TODO: Call your API for authentication
+    login(data);
   };
 
   return (
@@ -48,6 +47,7 @@ export default function LoginForm() {
             {...register("email")}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "email-error" : undefined}
+            disabled={isLoginPending}
           />
           {errors.email && (
             <p
@@ -72,6 +72,7 @@ export default function LoginForm() {
               {...register("password")}
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
+              disabled={isLoginPending}
             />
             <Button
               type="button"
@@ -79,6 +80,7 @@ export default function LoginForm() {
               size="icon"
               className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
               onClick={() => setShowPassword(!showPassword)}
+              disabled={isLoginPending}
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -98,8 +100,13 @@ export default function LoginForm() {
           )}
         </div>
 
-        <Button type="submit" className="w-full" variant="hero">
-          Sign In
+        <Button 
+          type="submit" 
+          className="w-full" 
+          variant="hero"
+          disabled={isLoginPending}
+        >
+          {isLoginPending ? "Signing In..." : "Sign In"}
         </Button>
       </form>
 

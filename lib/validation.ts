@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 export const optionalStringSchema = z
   .string()
   .trim()
@@ -18,37 +18,48 @@ export const phoneWithCountrySchema = optionalStringSchema.refine(
   }
 );
 
-
 // User registration schema
-export const userRegisterSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string().min(8, 'Please confirm your password'),
-  phone: phoneWithCountrySchema,
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+export const userRegisterSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    password_confirm: z.string().min(8, "Please confirm your password"),
+    phone: phoneWithCountrySchema,
+  })
+  .refine((data) => data.password === data.password_confirm, {
+    message: "Passwords don't match",
+    path: ["password_confirm"],
+  });
 export type UserRegisterValues = z.infer<typeof userRegisterSchema>;
 
-
 // Organization registration schema
-export const organizationRegisterSchema = z.object({
-  organizationName: z.string().min(2, 'Organization name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string().min(8, 'Please confirm your password'),
-  phone: phoneWithCountrySchema,
-  website: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  description: optionalStringSchema,
-  location: optionalStringSchema,
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
-export type OrganizationRegisterValues = z.infer<typeof organizationRegisterSchema>;
-
+export const organizationRegisterSchema = z
+  .object({
+    name: z.string().min(2, "Organization name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    phone: z
+      .string()
+      .min(1, "Phone number is required")
+      .refine(
+        (val) => /^\+\d{1,3}[\s\d-]{4,}$/.test(val),
+        {
+          message: "Phone number must include country code (e.g. +1...)",
+        }
+      ),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    password_confirm: z.string().min(8, "Please confirm your password"),
+    description: z.string().min(1, "Description is required").trim(),
+    website: z.string().url("Please enter a valid URL").min(1, "Website is required"),
+    location: z.string().min(1, "Location is required").trim(),
+  })
+  .refine((data) => data.password === data.password_confirm, {
+    message: "Passwords don't match",
+    path: ["password_confirm"],
+  });
+export type OrganizationRegisterValues = z.infer<
+  typeof organizationRegisterSchema
+>;
 
 // Login schema
 export const loginSchema = z.object({
@@ -57,23 +68,23 @@ export const loginSchema = z.object({
 });
 export type LoginValues = z.infer<typeof loginSchema>;
 
-
 // Forgot Password schema
 export const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-})
+});
 export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 
 // Reset Password schema
-export const resetPasswordSchema = z.object({
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(8, "Please confirm your password"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+export const resetPasswordSchema = z
+  .object({
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(8, "Please confirm your password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
-
 
 // Profile schema
 export const profileSchema = z.object({
@@ -93,6 +104,35 @@ export const profileSchema = z.object({
     })
     .optional(),
 
+  profile_image: z
+    .union([
+      z.string().url("Please provide a valid image URL"), // For existing profile image URLs
+      z.instanceof(File, { message: "Please upload a valid image file" }), // For file uploads
+      z.null(), // For no image
+      z.undefined(), // For optional field
+    ])
+    .optional()
+    .refine(
+      (val) => {
+        if (!val) return true; // Optional field
+        if (typeof val === "string") return true; // URL string
+        if (val instanceof File) {
+          // Validate file type for uploads
+          const allowedTypes = [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/webp",
+          ];
+          return allowedTypes.includes(val.type);
+        }
+        return false;
+      },
+      {
+        message:
+          "Profile image must be a valid URL or image file (JPEG, PNG, WebP)",
+      }
+    ),
 });
 export type ProfileFormValues = z.infer<typeof profileSchema>;
 
@@ -114,4 +154,4 @@ export const changePasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export  type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
+export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;

@@ -5,11 +5,13 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
+  const { isAuthenticated } = useAuth();
 
   // check if we are on announcements page
   const isAnnouncementsPage = true;
@@ -78,7 +80,7 @@ export default function Navbar() {
 
             {/* Auth */}
             <div className="hidden md:flex items-center space-x-2">
-              {isLoggedIn ? (
+              {isAuthenticated ? (
                 <UserMenu />
               ) : (
                 <>
@@ -138,7 +140,7 @@ export default function Navbar() {
               </Button>
 
               <div className="pt-4 border-t border-border mt-4">
-                {isLoggedIn ? (
+                {isAuthenticated ? (
                   <UserMenu />
                 ) : (
                   <div className="space-y-2">

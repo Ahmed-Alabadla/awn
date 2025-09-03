@@ -6,17 +6,19 @@ import {
 } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function OrganizationRegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const { organizationRegister, isOrganizationRegisterPending } = useAuth();
 
   const {
     register,
@@ -28,9 +30,9 @@ export default function OrganizationRegisterForm() {
     defaultValues: {
       phone: "",
       email: "",
-      organizationName: "",
+      name: "",
       password: "",
-      confirmPassword: "",
+      password_confirm: "",
       description: "",
       location: "",
       website: "",
@@ -38,13 +40,7 @@ export default function OrganizationRegisterForm() {
   });
 
   const onSubmit = async (data: OrganizationRegisterValues) => {
-    toast.success("Registration Submitted", {
-      description: "Registration submitted. Awaiting admin verification.",
-    });
-    console.log(data);
-    // toast.error("Registration Failed", {
-    //   description:  "An error occurred during registration",
-    // })
+    organizationRegister(data);
   };
 
   return (
@@ -53,25 +49,24 @@ export default function OrganizationRegisterForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Organization Name */}
           <div className="space-y-2">
-            <Label htmlFor="organizationName">
+            <Label htmlFor="name">
               Organization Name <span className="text-destructive">*</span>
             </Label>
             <Input
-              id="organizationName"
+              id="name"
               placeholder="Enter organization name"
-              {...register("organizationName")}
-              aria-invalid={!!errors.organizationName}
-              aria-describedby={
-                errors.organizationName ? "organization-error" : undefined
-              }
+              {...register("name")}
+              disabled={isOrganizationRegisterPending}
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? "name-error" : undefined}
             />
-            {errors.organizationName && (
+            {errors.name && (
               <p
-                id="organization-error"
+                id="name-error"
                 className="text-sm text-destructive"
                 role="alert"
               >
-                {errors.organizationName.message}
+                {errors.name.message}
               </p>
             )}
           </div>
@@ -85,6 +80,7 @@ export default function OrganizationRegisterForm() {
               type="email"
               placeholder="organization@example.com"
               {...register("email")}
+              disabled={isOrganizationRegisterPending}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
             />
@@ -112,6 +108,7 @@ export default function OrganizationRegisterForm() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Minimum 8 characters"
                 {...register("password")}
+                disabled={isOrganizationRegisterPending}
                 aria-invalid={!!errors.password}
                 aria-describedby={
                   errors.password ? "password-error" : undefined
@@ -152,10 +149,11 @@ export default function OrganizationRegisterForm() {
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
-                {...register("confirmPassword")}
-                aria-invalid={!!errors.confirmPassword}
+                {...register("password_confirm")}
+                disabled={isOrganizationRegisterPending}
+                aria-invalid={!!errors.password_confirm}
                 aria-describedby={
-                  errors.confirmPassword ? "confirm-password-error" : undefined
+                  errors.password_confirm ? "confirm-password-error" : undefined
                 }
               />
               <Button
@@ -175,13 +173,13 @@ export default function OrganizationRegisterForm() {
                 )}
               </Button>
             </div>
-            {errors.confirmPassword && (
+            {errors.password_confirm && (
               <p
                 id="confirm-password-error"
                 className="text-sm text-destructive"
                 role="alert"
               >
-                {errors.confirmPassword.message}
+                {errors.password_confirm.message}
               </p>
             )}
           </div>
@@ -190,12 +188,15 @@ export default function OrganizationRegisterForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Phone Number */}
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">
+              Phone Number <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="phone"
               type="tel"
               placeholder="+966 50 123 4567"
               {...register("phone")}
+              disabled={isOrganizationRegisterPending}
               aria-invalid={!!errors.phone}
               aria-describedby={errors.phone ? "phone-error" : undefined}
             />
@@ -212,12 +213,15 @@ export default function OrganizationRegisterForm() {
 
           {/* Website */}
           <div className="space-y-2">
-            <Label htmlFor="website">Website</Label>
+            <Label htmlFor="website">
+              Website <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="website"
               type="url"
               placeholder="https://www.example.com"
               {...register("website")}
+              disabled={isOrganizationRegisterPending}
               aria-invalid={!!errors.website}
               aria-describedby={errors.website ? "website-error" : undefined}
             />
@@ -234,12 +238,15 @@ export default function OrganizationRegisterForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="location">Location</Label>
+          <Label htmlFor="location">
+            Location <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="location"
             type="text"
             placeholder="Enter your location"
             {...register("location")}
+            disabled={isOrganizationRegisterPending}
             aria-invalid={!!errors.location}
             aria-describedby={errors.location ? "location-error" : undefined}
           />
@@ -251,21 +258,38 @@ export default function OrganizationRegisterForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">
+            Description <span className="text-destructive">*</span>
+          </Label>
           <Textarea
             id="description"
             placeholder="Describe your organization's mission and activities..."
             rows={4}
             {...register("description")}
+            disabled={isOrganizationRegisterPending}
+            aria-invalid={!!errors.description}
+            aria-describedby={
+              errors.description ? "description-error" : undefined
+            }
           />
+          {errors.description && (
+            <p className="text-sm text-destructive" role="alert">
+              {errors.description.message}
+            </p>
+          )}
         </div>
 
         <Button type="submit" className="w-full" variant="hero">
-          {/* <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Registering...
-          </> */}
-          Register
+          <>
+            {isOrganizationRegisterPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Registering...
+              </>
+            ) : (
+              "Register"
+            )}
+          </>
         </Button>
       </form>
       <div className="mt-6 text-center">

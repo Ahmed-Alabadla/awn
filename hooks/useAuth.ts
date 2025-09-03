@@ -1,0 +1,167 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { authService } from "@/services/auth.service";
+import {
+  LoginValues,
+  OrganizationRegisterValues,
+  UserRegisterValues,
+} from "@/lib/validation";
+import { ApiError } from "@/lib/types";
+
+export const useAuth = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  // Check authentication status
+  const { data: isAuthenticated, isLoading: isAuthLoading } = useQuery({
+    queryKey: ["auth", "status"],
+    queryFn: () => authService.isAuthenticated(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Get current user data
+  const { data: user, isLoading: isUserLoading } = useQuery({
+    queryKey: ["auth", "user"],
+    queryFn: () => authService.getCurrentUser(),
+    enabled: !!isAuthenticated,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    retry: (failureCount, error) => {
+      // Don't retry if it's a 401 error (unauthorized)
+      if ((error as ApiError)?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+
+  // Login mutation
+  const loginMutation = useMutation({
+    mutationFn: (credentials: LoginValues) => authService.login(credentials),
+    onSuccess: () => {
+      // Invalidate auth queries to update authentication status
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      toast.success("Login successful!");
+      router.push("/"); // Redirect to home page or dashboard
+    },
+    onError: (error: ApiError) => {
+      const errorStatusText = error?.response?.statusText || "Unknown error";
+      const errorMessage =
+        error?.response?.data?.detail ||
+        error?.response?.data?.message ||
+        "Login failed. Please try again.";
+      toast.error(errorStatusText, {
+        description: errorMessage,
+      });
+    },
+  });
+
+  // User register mutation
+  const userRegisterMutation = useMutation({
+    mutationFn: (data: UserRegisterValues) => authService.userRegister(data),
+    onSuccess: () => {
+      toast.success("Registration successful!", {
+        description: "You can now log in with your credentials.",
+      });
+      router.push("/login");
+    },
+    onError: (error: ApiError) => {
+      const errorStatusText = error?.response?.statusText || "Unknown error";
+
+      const errors = error?.response?.data?.errors;
+      const firstErrorMessage =
+        errors && Object.keys(errors).length > 0
+          ? errors[Object.keys(errors)[0]][0] // first field’s first error
+          : null;
+
+      const errorMessage =
+        error?.response?.data?.detail ||
+        firstErrorMessage ||
+        error?.response?.data?.message ||
+        "Registration failed. Please try again.";
+
+      toast.error(errorStatusText, {
+        description: errorMessage,
+      });
+    },
+  });
+
+  // Organization register mutation
+  const organizationRegisterMutation = useMutation({
+    mutationFn: (data: OrganizationRegisterValues) =>
+      authService.organizationRegister(data),
+    onSuccess: () => {
+      toast.success("Organization registration successful!", {
+        description: "You can now log in with your credentials.",
+      });
+      router.push("/login");
+    },
+    onError: (error: ApiError) => {
+      const errorStatusText = error?.response?.statusText || "Unknown error";
+
+      const errors = error?.response?.data?.errors;
+      const firstErrorMessage =
+        errors && Object.keys(errors).length > 0
+          ? errors[Object.keys(errors)[0]][0] // first field’s first error
+          : null;
+
+      const errorMessage =
+        error?.response?.data?.detail ||
+        firstErrorMessage ||
+        error?.response?.data?.message ||
+        "Registration failed. Please try again.";
+
+      toast.error(errorStatusText, {
+        description: errorMessage,
+      });
+    },
+  });
+
+  // Logout mutation
+  const logoutMutation = useMutation({
+    mutationFn: () => authService.logout(),
+    onSuccess: () => {
+      // Set authentication status to false immediately
+      queryClient.setQueryData(["auth", "status"], false);
+      // Clear user data
+      queryClient.removeQueries({ queryKey: ["auth", "user"] });
+      // Invalidate auth queries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      toast.success("Logged out successfully");
+      router.push("/");
+    },
+    onError: () => {
+      // Even if logout request fails, clear local tokens and redirect
+      queryClient.setQueryData(["auth", "status"], false);
+      queryClient.removeQueries({ queryKey: ["auth", "user"] });
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      toast.success("Logged out successfully");
+      router.push("/");
+    },
+  });
+
+  // Get tokens
+  const getTokens = () => authService.getTokens();
+
+  // Return all hooks and state
+  return {
+    // State
+    isAuthenticated: !!isAuthenticated,
+    isLoading: isAuthLoading || isUserLoading,
+    user,
+
+    // Actions
+    login: loginMutation.mutate,
+    userRegister: userRegisterMutation.mutate,
+    organizationRegister: organizationRegisterMutation.mutate,
+    logout: logoutMutation.mutate,
+    getTokens,
+
+    // Mutation states
+    isLoginPending: loginMutation.isPending,
+    isUserRegisterPending: userRegisterMutation.isPending,
+    isOrganizationRegisterPending: organizationRegisterMutation.isPending,
+    isLogoutPending: logoutMutation.isPending,
+    loginError: loginMutation.error,
+  };
+};
