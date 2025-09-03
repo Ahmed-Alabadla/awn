@@ -2,7 +2,6 @@
 import { resetPasswordSchema, ResetPasswordValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { useState } from "react";
@@ -10,7 +9,15 @@ import { Button } from "../ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
-export default function ResetPasswordForm() {
+interface ResetPasswordFormProps {
+  userId: string;
+  token: string;
+}
+
+export default function ResetPasswordForm({
+  userId,
+  token,
+}: ResetPasswordFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -21,15 +28,15 @@ export default function ResetPasswordForm() {
   } = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      newPassword: "",
-      confirmPassword: "",
+      password: "",
+      password_confirm: "",
     },
   });
 
   const onSubmit = async (data: ResetPasswordValues) => {
-    console.log("Reset Password Data:", data);
-    toast.success("Reset Password request successful!");
-    // TODO: Call your API for authentication
+    console.log("Resetting password for user:", userId);
+    console.log("Reset token:", token);
+    console.log("New password:", data.password);
   };
 
   return (
@@ -45,11 +52,9 @@ export default function ResetPasswordForm() {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Minimum 8 characters"
-              {...register("newPassword")}
-              aria-invalid={!!errors.newPassword}
-              aria-describedby={
-                errors.newPassword ? "password-error" : undefined
-              }
+              {...register("password")}
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? "password-error" : undefined}
             />
             <Button
               type="button"
@@ -66,30 +71,30 @@ export default function ResetPasswordForm() {
               )}
             </Button>
           </div>
-          {errors.newPassword && (
+          {errors.password && (
             <p
               id="password-error"
               className="text-sm text-destructive"
               role="alert"
             >
-              {errors.newPassword.message}
+              {errors.password.message}
             </p>
           )}
         </div>
         {/* Confirm Password */}
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">
+          <Label htmlFor="password_confirm">
             Confirm Password <span className="text-destructive">*</span>
           </Label>
           <div className="relative">
             <Input
-              id="confirmPassword"
+              id="password_confirm"
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm your password"
-              {...register("confirmPassword")}
-              aria-invalid={!!errors.confirmPassword}
+              {...register("password_confirm")}
+              aria-invalid={!!errors.password_confirm}
               aria-describedby={
-                errors.confirmPassword ? "confirm-password-error" : undefined
+                errors.password_confirm ? "confirm-password-error" : undefined
               }
             />
             <Button
@@ -109,19 +114,20 @@ export default function ResetPasswordForm() {
               )}
             </Button>
           </div>
-          {errors.confirmPassword && (
+          {errors.password_confirm && (
             <p
               id="confirm-password-error"
               className="text-sm text-destructive"
               role="alert"
             >
-              {errors.confirmPassword.message}
+              {errors.password_confirm.message}
             </p>
           )}
         </div>
 
         <Button type="submit" className="w-full" variant="hero">
-          Reset Password
+          {/* {isLoading ? "Resetting Password..." : "Reset Password"} */}
+          <span>Reset Password</span>
         </Button>
       </form>
       <div className="mt-6 text-center space-y-2">

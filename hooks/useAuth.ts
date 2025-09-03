@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { authService } from "@/services/auth.service";
 import {
   ChangePasswordFormValues,
+  ForgotPasswordValues,
   LoginValues,
   OrganizationRegisterValues,
   UserRegisterValues,
@@ -155,6 +156,35 @@ export const useAuth = () => {
     },
   });
 
+  // Forgot password
+  const forgotPasswordMutation = useMutation({
+    mutationFn: (data: ForgotPasswordValues) =>
+      authService.forgotPassword(data),
+    onSuccess: () => {
+      toast.success("Password reset link sent successfully!");
+      router.push("/login");
+    },
+    onError: (error: ApiError) => {
+      const errorStatusText = error?.response?.statusText || "Unknown error";
+
+      const errors = error?.response?.data?.errors;
+      const firstErrorMessage =
+        errors && Object.keys(errors).length > 0
+          ? errors[Object.keys(errors)[0]][0] // first field’s first error
+          : null;
+
+      const errorMessage =
+        error?.response?.data?.detail ||
+        firstErrorMessage ||
+        error?.response?.data?.message ||
+        "Forgot password request failed. Please try again.";
+
+      toast.error(errorStatusText, {
+        description: errorMessage,
+      });
+    },
+  });
+
   // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: () => authService.logout(),
@@ -193,6 +223,7 @@ export const useAuth = () => {
     userRegister: userRegisterMutation.mutate,
     organizationRegister: organizationRegisterMutation.mutate,
     changePassword: changePasswordMutation.mutate,
+    forgotPassword: forgotPasswordMutation.mutate,
     logout: logoutMutation.mutate,
     getTokens,
 
@@ -201,6 +232,7 @@ export const useAuth = () => {
     isUserRegisterPending: userRegisterMutation.isPending,
     isOrganizationRegisterPending: organizationRegisterMutation.isPending,
     isChangePasswordPending: changePasswordMutation.isPending,
+    isForgotPasswordPending: forgotPasswordMutation.isPending,
     isLogoutPending: logoutMutation.isPending,
     loginError: loginMutation.error,
   };

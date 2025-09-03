@@ -6,28 +6,44 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import ResetPasswordForm from "@/components/shared/ResetPasswordForm";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Reset Password",
-  description:
-    "Enter your email address to receive a link to reset your password and regain access to your TrendHub account.",
+  title: "Invalid Reset Link",
+  description: "The password reset link is invalid or missing parameters.",
 };
 
-export default function ResetPasswordPage() {
+export default function InvalidResetLinkPage() {
   return (
     <Card className="w-full max-w-md shadow-elegant">
       <CardHeader className="text-center space-y-2 mt-2">
         <CardTitle className="text-2xl font-bold block bg-hero-gradient bg-clip-text text-transparent">
-          Reset Password
+          Invalid Reset Link
         </CardTitle>
         <CardDescription>
-          Enter your new password and confirm it to reset your password.
+          The password reset link is invalid, expired, or missing required parameters.
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
-        <ResetPasswordForm />
+      <CardContent className="space-y-4">
+        <div className="text-center text-sm text-muted-foreground">
+          <p>If you need to reset your password, please request a new reset link.</p>
+        </div>
+        
+        <div className="space-y-2">
+          <Button asChild className="w-full" variant="hero">
+            <Link href="/forgot-password">
+              Request New Reset Link
+            </Link>
+          </Button>
+          
+          <Button asChild className="w-full" variant="outline">
+            <Link href="/login">
+              Back to Login
+            </Link>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,8 +1,10 @@
 import api from "@/lib/axios";
 import {
   ChangePasswordFormValues,
+  ForgotPasswordValues,
   LoginValues,
   OrganizationRegisterValues,
+  ResetPasswordValues,
   UserRegisterValues,
 } from "@/lib/validation";
 import { AuthResponse, User } from "@/lib/types";
@@ -55,6 +57,27 @@ export const authService = {
   // Change password
   changePassword: async (data: ChangePasswordFormValues) => {
     const response = await api.post("/awn/api/auth/change-password/", data);
+    return response.data;
+  },
+
+  // Forgot password
+  forgotPassword: async (data: ForgotPasswordValues) => {
+    const response = await api.post("/awn/api/auth/forgot-password/", data);
+    return response.data;
+  },
+
+  // Reset password
+  resetPassword: async (
+    userId: string,
+    token: string,
+    data: ResetPasswordValues
+  ) => {
+    const response = await api.post("/awn/api/auth/reset-password/", {
+      user_id: userId,
+      token,
+      password: data.password,
+      password_confirm: data.password_confirm,
+    });
     return response.data;
   },
 

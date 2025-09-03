@@ -77,12 +77,12 @@ export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 // Reset Password schema
 export const resetPasswordSchema = z
   .object({
-    newPassword: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8, "Please confirm your password"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    password_confirm: z.string().min(8, "Please confirm your password"),
   })
-  .refine((data) => data.newPassword === data.confirmPassword, {
+  .refine((data) => data.password === data.password_confirm, {
     message: "Passwords don't match",
-    path: ["confirmPassword"],
+    path: ["password_confirm"],
   });
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 

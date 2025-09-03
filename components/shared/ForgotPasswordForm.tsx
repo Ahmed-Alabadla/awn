@@ -1,18 +1,20 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { forgotPasswordSchema, ForgotPasswordValues } from "@/lib/validation";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function ForgotPasswordForm() {
+  const { forgotPassword, isForgotPasswordPending } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<ForgotPasswordValues>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
@@ -21,9 +23,11 @@ export default function ForgotPasswordForm() {
   });
 
   const onSubmit = async (data: ForgotPasswordValues) => {
-    console.log("Forgot Password Data:", data);
-    toast.success("Forgot Password request successful!");
-    // TODO: Call your API for authentication
+    forgotPassword(data, {
+      onSuccess: () => {
+        reset();
+      },
+    });
   };
 
   return (
@@ -38,6 +42,7 @@ export default function ForgotPasswordForm() {
             type="email"
             placeholder="you@example.com"
             {...register("email")}
+            disabled={isForgotPasswordPending}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "email-error" : undefined}
           />
@@ -53,7 +58,7 @@ export default function ForgotPasswordForm() {
         </div>
 
         <Button type="submit" className="w-full" variant="hero">
-          Send Reset Link
+          {isForgotPasswordPending ? "Sending..." : "Send Reset Link"}
         </Button>
       </form>
 

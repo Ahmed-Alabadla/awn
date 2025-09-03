@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Card,
@@ -44,8 +44,12 @@ import {
 import { usePasswordStrength } from "@/hooks/use-password-strength";
 import { useAuth } from "@/hooks/useAuth";
 import { ImageDropzone } from "./ImageDropzone";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Profile() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
   const { user, changePassword, isChangePasswordPending } = useAuth();
 
   const profileForm = useForm<ProfileFormValues>({
@@ -208,13 +212,31 @@ export default function Profile() {
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="current-password">Current Password</Label>
-                <Input
-                  id="current-password"
-                  type="password"
-                  {...changePasswordForm.register("old_password")}
-                  disabled={isChangePasswordPending}
-                  placeholder="Password"
-                />
+                <div className="relative">
+                  <Input
+                    id="current-password"
+                    type={showPassword ? "text" : "password"}
+                    {...changePasswordForm.register("old_password")}
+                    disabled={isChangePasswordPending}
+                    placeholder="Password"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
                 {changePasswordForm.formState.errors.old_password && (
                   <p className="text-sm text-red-500">
                     {changePasswordForm.formState.errors.old_password.message}
@@ -223,13 +245,31 @@ export default function Profile() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="new-password">New Password</Label>
-                <Input
-                  id="new-password"
-                  type="password"
-                  {...changePasswordForm.register("new_password")}
-                  disabled={isChangePasswordPending}
-                  placeholder="Password"
-                />
+                <div className="relative">
+                  <Input
+                    id="new-password"
+                    type={showNewPassword ? "text" : "password"}
+                    {...changePasswordForm.register("new_password")}
+                    disabled={isChangePasswordPending}
+                    placeholder="Password"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    aria-label={
+                      showNewPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
                 {passwordValue && (
                   <div className="mt-1">
                     <div className="h-1 w-full bg-gray-200">
@@ -253,13 +293,33 @@ export default function Profile() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input
-                  id="confirm-password"
-                  type="password"
-                  {...changePasswordForm.register("new_password_confirm")}
-                  disabled={isChangePasswordPending}
-                  placeholder="Password"
-                />
+                <div className="relative">
+                  <Input
+                    id="confirm-password"
+                    type={showConfirmNewPassword ? "text" : "password"}
+                    {...changePasswordForm.register("new_password_confirm")}
+                    disabled={isChangePasswordPending}
+                    placeholder="Password"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() =>
+                      setShowConfirmNewPassword(!showConfirmNewPassword)
+                    }
+                    aria-label={
+                      showConfirmNewPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showConfirmNewPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
                 {changePasswordForm.formState.errors.new_password_confirm && (
                   <p className="text-sm text-red-500">
                     {
