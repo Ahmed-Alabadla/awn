@@ -13,9 +13,6 @@ export default function Navbar() {
 
   const { isAuthenticated } = useAuth();
 
-  // check if we are on announcements page
-  const isAnnouncementsPage = true;
-
   return (
     <nav className="bg-card border-b border-border shadow-card sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,7 +31,7 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
-            {!isAnnouncementsPage && (
+            {!isAuthenticated && (
               <div className="ml-10 flex items-baseline space-x-4">
                 <Button variant={pathname === "/" ? "default" : "ghost"}>
                   <Link href="/">Home</Link>
@@ -54,7 +51,7 @@ export default function Navbar() {
           {/* Right side: Auth + Icons */}
           <div className="flex items-center space-x-4">
             {/* Show icons only on announcements page */}
-            {isAnnouncementsPage && (
+            {isAuthenticated && (
               <div className="flex items-center space-x-3">
                 {/* Notifications */}
                 <div className="relative">
@@ -95,7 +92,7 @@ export default function Navbar() {
             </div>
 
             {/* Mobile menu button (only if not announcements) */}
-            {!isAnnouncementsPage && (
+            {!isAuthenticated && (
               <div className="md:hidden">
                 <Button
                   variant="ghost"
@@ -114,7 +111,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile menu (only if not on announcements page) */}
-        {!isAnnouncementsPage && mobileMenuOpen && (
+        {!isAuthenticated && mobileMenuOpen && (
           <div className="md:hidden border-t border-border">
             <div className="px-2 pt-2 pb-3 space-y-1">
               <Button
