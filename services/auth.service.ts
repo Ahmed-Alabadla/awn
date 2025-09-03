@@ -1,5 +1,6 @@
 import api from "@/lib/axios";
 import {
+  ChangePasswordFormValues,
   LoginValues,
   OrganizationRegisterValues,
   UserRegisterValues,
@@ -37,6 +38,7 @@ export const authService = {
     return response.data;
   },
 
+  // Organization register
   organizationRegister: async (
     data: OrganizationRegisterValues
   ): Promise<AuthResponse> => {
@@ -48,6 +50,12 @@ export const authService = {
   getCurrentUser: async (): Promise<User> => {
     const response = await api.get("/awn/api/auth/profile");
     return response.data.data;
+  },
+
+  // Change password
+  changePassword: async (data: ChangePasswordFormValues) => {
+    const response = await api.post("/awn/api/auth/change-password/", data);
+    return response.data;
   },
 
   // Logout

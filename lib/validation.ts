@@ -41,16 +41,16 @@ export const organizationRegisterSchema = z
     phone: z
       .string()
       .min(1, "Phone number is required")
-      .refine(
-        (val) => /^\+\d{1,3}[\s\d-]{4,}$/.test(val),
-        {
-          message: "Phone number must include country code (e.g. +1...)",
-        }
-      ),
+      .refine((val) => /^\+\d{1,3}[\s\d-]{4,}$/.test(val), {
+        message: "Phone number must include country code (e.g. +1...)",
+      }),
     password: z.string().min(8, "Password must be at least 8 characters"),
     password_confirm: z.string().min(8, "Please confirm your password"),
     description: z.string().min(1, "Description is required").trim(),
-    website: z.string().url("Please enter a valid URL").min(1, "Website is required"),
+    website: z
+      .string()
+      .url("Please enter a valid URL")
+      .min(1, "Website is required"),
     location: z.string().min(1, "Location is required").trim(),
   })
   .refine((data) => data.password === data.password_confirm, {
@@ -139,19 +139,19 @@ export type ProfileFormValues = z.infer<typeof profileSchema>;
 // Change Password Form
 export const changePasswordSchema = z
   .object({
-    oldPassword: z.string().min(6, "Password must be at least 6 characters"),
-    newPassword: z
+    old_password: z.string().min(8, "Password must be at least 8 characters"),
+    new_password: z
       .string()
-      .min(6, "Password must be at least 6 characters")
+      .min(8, "Password must be at least 8 characters")
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
         "Password must include uppercase, lowercase, number, and special character (@$!%*?&)"
       ),
-    confirmPassword: z.string(),
+    new_password_confirm: z.string(),
   })
-  .refine((data) => data.newPassword === data.confirmPassword, {
+  .refine((data) => data.new_password === data.new_password_confirm, {
     message: "Passwords do not match",
-    path: ["confirmPassword"],
+    path: ["new_password_confirm"],
   });
 
 export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;

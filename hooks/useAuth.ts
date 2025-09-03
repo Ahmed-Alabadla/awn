@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authService } from "@/services/auth.service";
 import {
+  ChangePasswordFormValues,
   LoginValues,
   OrganizationRegisterValues,
   UserRegisterValues,
@@ -117,6 +118,43 @@ export const useAuth = () => {
     },
   });
 
+  // Change password mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: (data: ChangePasswordFormValues) =>
+      authService.changePassword(data),
+    onSuccess: () => {
+      toast.success("Password changed successfully!");
+    },
+    onError: (error: ApiError) => {
+      console.log(error);
+
+      const errorStatusText = error?.response?.statusText || "Unknown error";
+
+      const errorData = error?.response?.data;
+
+      let errorMessage: string | null = null;
+
+      if (errorData) {
+        // case: validation errors are key -> array
+        if (errorData.errors) {
+          const firstKey = Object.keys(errorData.errors)[0];
+          if (firstKey) {
+            errorMessage = errorData.errors[firstKey][0]; // first error message
+          }
+        }
+
+        // fallback to `message` or `detail`
+        if (!errorMessage) {
+          errorMessage = errorData.message || errorData.detail || null;
+        }
+      }
+
+      toast.error(errorStatusText, {
+        description: errorMessage || "Something went wrong. Please try again.",
+      });
+    },
+  });
+
   // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: () => authService.logout(),
@@ -154,6 +192,7 @@ export const useAuth = () => {
     login: loginMutation.mutate,
     userRegister: userRegisterMutation.mutate,
     organizationRegister: organizationRegisterMutation.mutate,
+    changePassword: changePasswordMutation.mutate,
     logout: logoutMutation.mutate,
     getTokens,
 
@@ -161,6 +200,7 @@ export const useAuth = () => {
     isLoginPending: loginMutation.isPending,
     isUserRegisterPending: userRegisterMutation.isPending,
     isOrganizationRegisterPending: organizationRegisterMutation.isPending,
+    isChangePasswordPending: changePasswordMutation.isPending,
     isLogoutPending: logoutMutation.isPending,
     loginError: loginMutation.error,
   };

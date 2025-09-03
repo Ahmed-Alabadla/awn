@@ -46,7 +46,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ImageDropzone } from "./ImageDropzone";
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, changePassword, isChangePasswordPending } = useAuth();
 
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -71,7 +71,7 @@ export default function Profile() {
     resolver: zodResolver(changePasswordSchema),
   });
 
-  const passwordValue = changePasswordForm.watch("newPassword") || "";
+  const passwordValue = changePasswordForm.watch("new_password") || "";
   const { message, getColor, getPercentage } =
     usePasswordStrength(passwordValue);
 
@@ -80,9 +80,12 @@ export default function Profile() {
     console.log(data);
   };
   const onSubmitChangePassword = (data: ChangePasswordFormValues) => {
-    console.log(data);
+    changePassword(data, {
+      onSuccess: () => {
+        changePasswordForm.reset();
+      },
+    });
   };
-
   return (
     <Card>
       <CardHeader>
@@ -208,12 +211,13 @@ export default function Profile() {
                 <Input
                   id="current-password"
                   type="password"
-                  {...changePasswordForm.register("oldPassword")}
+                  {...changePasswordForm.register("old_password")}
+                  disabled={isChangePasswordPending}
                   placeholder="Password"
                 />
-                {changePasswordForm.formState.errors.oldPassword && (
+                {changePasswordForm.formState.errors.old_password && (
                   <p className="text-sm text-red-500">
-                    {changePasswordForm.formState.errors.oldPassword.message}
+                    {changePasswordForm.formState.errors.old_password.message}
                   </p>
                 )}
               </div>
@@ -222,7 +226,8 @@ export default function Profile() {
                 <Input
                   id="new-password"
                   type="password"
-                  {...changePasswordForm.register("newPassword")}
+                  {...changePasswordForm.register("new_password")}
+                  disabled={isChangePasswordPending}
                   placeholder="Password"
                 />
                 {passwordValue && (
@@ -240,9 +245,9 @@ export default function Profile() {
                     )}
                   </div>
                 )}
-                {changePasswordForm.formState.errors.newPassword && (
+                {changePasswordForm.formState.errors.new_password && (
                   <p className="text-sm text-red-500">
-                    {changePasswordForm.formState.errors.newPassword.message}
+                    {changePasswordForm.formState.errors.new_password.message}
                   </p>
                 )}
               </div>
@@ -251,13 +256,14 @@ export default function Profile() {
                 <Input
                   id="confirm-password"
                   type="password"
-                  {...changePasswordForm.register("confirmPassword")}
+                  {...changePasswordForm.register("new_password_confirm")}
+                  disabled={isChangePasswordPending}
                   placeholder="Password"
                 />
-                {changePasswordForm.formState.errors.confirmPassword && (
+                {changePasswordForm.formState.errors.new_password_confirm && (
                   <p className="text-sm text-red-500">
                     {
-                      changePasswordForm.formState.errors.confirmPassword
+                      changePasswordForm.formState.errors.new_password_confirm
                         .message
                     }
                   </p>
@@ -266,15 +272,8 @@ export default function Profile() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button
-              type="submit"
-              // disabled={
-              //   changePassword.isPending ||
-              //   !changePasswordForm.formState.isDirty
-              // }
-            >
-              Change Password
-              {/* {changePassword.isPending ? "Processing..." : "Change Password"} */}
+            <Button type="submit" disabled={isChangePasswordPending}>
+              {isChangePasswordPending ? "Processing..." : "Change Password"}
             </Button>
           </div>
         </form>
