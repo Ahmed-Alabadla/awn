@@ -1,7 +1,11 @@
 import api from "@/lib/axios";
 import {
+  ChangePasswordFormValues,
+  ForgotPasswordValues,
   LoginValues,
   OrganizationRegisterValues,
+  ProfileFormValues,
+  ResetPasswordValues,
   UserRegisterValues,
 } from "@/lib/validation";
 import { AuthResponse, User } from "@/lib/types";
@@ -37,6 +41,7 @@ export const authService = {
     return response.data;
   },
 
+  // Organization register
   organizationRegister: async (
     data: OrganizationRegisterValues
   ): Promise<AuthResponse> => {
@@ -48,6 +53,65 @@ export const authService = {
   getCurrentUser: async (): Promise<User> => {
     const response = await api.get("/awn/api/auth/profile");
     return response.data.data;
+  },
+
+  // Change password
+  changePassword: async (data: ChangePasswordFormValues) => {
+    const response = await api.post("/awn/api/auth/change-password/", data);
+    return response.data;
+  },
+
+  // Forgot password
+  forgotPassword: async (data: ForgotPasswordValues) => {
+    const response = await api.post("/awn/api/auth/forgot-password/", data);
+    return response.data;
+  },
+
+  // Reset password
+  resetPassword: async (
+    userId: string,
+    token: string,
+    data: ResetPasswordValues
+  ) => {
+    const response = await api.post("/awn/api/auth/reset-password/", {
+      user_id: userId,
+      token,
+      password: data.password,
+      password_confirm: data.password_confirm,
+    });
+    return response.data;
+  },
+
+  // Update profile
+  updateProfile: async (data: ProfileFormValues): Promise<User> => {
+    // Check if profile_image is a File to determine if we need FormData
+    const hasFile = data.profile_image instanceof File;
+
+    if (hasFile) {
+      // Use FormData for file upload
+      const formData = new FormData();
+
+      // Add other fields to FormData
+      if (data.name) formData.append("name", data.name);
+      if (data.phone) formData.append("phone", data.phone);
+      if (data.profile_image)
+        formData.append("profile_image", data.profile_image);
+
+      const response = await api.put(
+        "/awn/api/auth/update-profile/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data.data;
+    } else {
+      // Use regular JSON for other data
+      const response = await api.put("/awn/api/auth/update-profile/", data);
+      return response.data.data;
+    }
   },
 
   // Logout
@@ -80,7 +144,15 @@ export const authService = {
 
   // Check if user is authenticated
   isAuthenticated: () => {
-    const { accessToken } = authService.getTokens();
-    return !!accessToken;
+    const { accessToken, refreshToken } = authService.getTokens();
+
+    // If no tokens exist, user is not authenticated
+    if (!accessToken && !refreshToken) {
+      return false;
+    }
+
+    // If we have at least an access token, consider user authenticated
+    // The axios interceptor will handle token refresh if needed
+    return !!accessToken || !!refreshToken;
   },
 };
