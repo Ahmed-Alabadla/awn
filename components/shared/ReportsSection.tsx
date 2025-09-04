@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +10,25 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { ReportFormValues, reportSchema } from "@/lib/validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 // Mock data for organizations
 const MOCK_ORGANIZATIONS = [
@@ -23,34 +40,30 @@ const MOCK_ORGANIZATIONS = [
   "EmpowerHer",
 ];
 
-type ReportType = "bug" | "organization";
-
 export default function ReportsSection() {
-  const [reportType, setReportType] = useState<ReportType>("bug");
-  const [organization, setOrganization] = useState<string>("");
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
+  const form = useForm<ReportFormValues>({
+    resolver: zodResolver(reportSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      target_org: "",
+      type: "system",
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title || !message || (reportType === "organization" && !organization)) {
-      toast.error("Please fill out all required fields.");
-      return;
-    }
+  const watchedType = form.watch("type");
 
-    toast.success("Your feedback has been submitted successfully!");
-
-    // Reset form
-    setTitle("");
-    setMessage("");
-    setOrganization("");
-  };
-
+  function onSubmit(values: ReportFormValues) {
+    console.log(values);
+  }
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-1">Submit Feedback or Report an Issue</h2>
+      <h2 className="text-2xl font-bold mb-1">
+        Submit Feedback or Report an Issue
+      </h2>
       <p className="text-muted-foreground mb-6">
-        Let us know if you&apos;ve found a bug or have feedback for an organization.
+        Let us know if you&apos;ve found a bug or have feedback for an
+        organization.
       </p>
 
       <Card>
@@ -61,71 +74,108 @@ export default function ReportsSection() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="font-medium">Feedback Type</label>
-              <select
-                className="w-full border rounded px-3 py-2 bg-background"
-                value={reportType}
-                onChange={(e) => setReportType(e.target.value as ReportType)}
-              >
-                <option value="bug">Report a Bug in the Application</option>
-                <option value="organization">Report a Problem with an Organization</option>
-              </select>
-            </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Feedback Type</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select feedback type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="system">
+                              Report a Bug in the Application
+                            </SelectItem>
+                            <SelectItem value="organization">
+                              Report a Problem with an Organization
+                            </SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
 
-            {reportType === "organization" && (
-              <div className="space-y-2 animate-fade-in">
-                <label htmlFor="organization" className="font-medium">
-                  Organization
-                </label>
-                <select
-                  id="organization"
-                  className="w-full border rounded px-3 py-2 bg-background"
-                  value={organization}
-                  onChange={(e) => setOrganization(e.target.value)}
-                >
-                  <option value="" disabled>
-                    Select an organization
-                  </option>
-                  {MOCK_ORGANIZATIONS.map((org) => (
-                    <option key={org} value={org}>
-                      {org}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <label htmlFor="title" className="font-medium">
-                Title
-              </label>
-              <Input
-                id="title"
-                placeholder="Enter a brief title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="message" className="font-medium">
-                Message
-              </label>
-              <Textarea
-                id="message"
-                placeholder="Please provide a detailed description."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={5}
+              {watchedType === "organization" && (
+                <FormField
+                  control={form.control}
+                  name="target_org"
+                  render={({ field }) => (
+                    <FormItem className="animate-fade-in">
+                      <FormLabel>Organization</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select an organization" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {MOCK_ORGANIZATIONS.map((org) => (
+                                <SelectItem key={org} value={org}>
+                                  {org}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter a brief title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <Button type="submit" className="w-full">
-              Send Feedback
-            </Button>
-          </form>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Message</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Please provide a detailed description."
+                        rows={5}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full">
+                Send Feedback
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

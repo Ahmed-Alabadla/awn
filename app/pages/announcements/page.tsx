@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import FavoritesSection from "@/components/shared/FavoritesSection";
 import NotificationSection from "@/components/shared/NotificationSection";
 import ReportsSection from "@/components/shared/ReportsSection";
+import { useAuth } from "@/hooks/useAuth";
 
 const PAGE_SIZE = 6;
 const NAV_ITEMS = ["Search Aid", "Favorites", "Notifications", "Reports"];
@@ -22,6 +23,8 @@ function calculateDaysLeft(endDate: Date): number {
 }
 
 export default function AnnouncementPage() {
+  const { user } = useAuth();
+
   const [favorites, setFavorites] = useState<Announcement[]>([]);
   function toggleFavorite(announcement: Announcement) {
     setFavorites((prev) => {
@@ -177,14 +180,13 @@ export default function AnnouncementPage() {
         {/* Welcome Section */}
         <div className="mb-12 text-center">
           <h1 className="text-3xl lg:text-4xl font-bold mb-2">
-            Welcome back, John Doe
+            Welcome back, <span className="text-primary">{user?.name}</span>
           </h1>
           <p className="text-lg text-muted-foreground">
             Manage your aid requests and explore new opportunities
           </p>
         </div>
 
-        {/* Tabs */}
         {/* Tabs */}
         <div className="bg-white rounded-lg shadow p-6">
           <nav className="mb-8">
@@ -198,10 +200,10 @@ export default function AnnouncementPage() {
                 <li key={item} className="flex justify-center">
                   <button
                     onClick={() => setActiveTab(item)}
-                    className={`w-full md:w-auto px-4 sm:px-6 py-2 rounded-lg transition ${
+                    className={`w-full md:w-auto px-4 sm:px-6 py-2 rounded-lg transition  cursor-pointer ${
                       activeTab === item
-                        ? "border-2 border-sky-400 bg-[#009285] font-semibold text-white"
-                        : "text-gray-500 hover:text-black"
+                        ? "border-2 border-primary bg-[#009285]  font-semibold text-white"
+                        : "text-gray-500 hover:text-black hover:bg-accent/20"
                     }`}
                   >
                     {item}
