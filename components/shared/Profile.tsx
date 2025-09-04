@@ -24,17 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 import { Separator } from "@/components/ui/separator";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+
 import {
   ChangePasswordFormValues,
   changePasswordSchema,
@@ -50,7 +40,13 @@ export default function Profile() {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
-  const { user, changePassword, isChangePasswordPending } = useAuth();
+  const {
+    user,
+    changePassword,
+    isChangePasswordPending,
+    updateProfile,
+    isUpdateProfilePending,
+  } = useAuth();
 
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -80,8 +76,7 @@ export default function Profile() {
     usePasswordStrength(passwordValue);
 
   const onSubmitUpdateProfile = (data: ProfileFormValues) => {
-    console.log(profileForm);
-    console.log(data);
+    updateProfile(data);
   };
   const onSubmitChangePassword = (data: ChangePasswordFormValues) => {
     changePassword(data, {
@@ -173,7 +168,7 @@ export default function Profile() {
                           <Input
                             placeholder="Enter phone number"
                             {...field}
-                            value={field.value!}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -186,12 +181,11 @@ export default function Profile() {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                // disabled={
-                //   updateProfile.isPending || !profileForm.formState.isDirty
-                // }
+                disabled={
+                  isUpdateProfilePending || !profileForm.formState.isDirty
+                }
               >
-                Update Profile
-                {/* {updateProfile.isPending ? "Processing..." : "Update Profile"} */}
+                {isUpdateProfilePending ? "Updating..." : "Update Profile"}
               </Button>
             </div>
           </form>
@@ -337,45 +331,6 @@ export default function Profile() {
             </Button>
           </div>
         </form>
-
-        <Separator className="dark:bg-gray-500" />
-
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-medium text-red-600">Delete Account</h3>
-            <p className="text-sm text-muted-foreground">
-              Permanently delete your account and all associated data
-            </p>
-          </div>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive">
-                Delete Account
-                {/* {deleteProfile.isPending ? "Deleting..." : "Delete Account"} */}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove all your data from our servers.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="hover:bg-gray-500">
-                  Cancel
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  // onClick={handleDeleteProfile}
-                  className="bg-red-600  dark:bg-red-500 hover:bg-red-700 dark:hover:bg-red-600 focus:ring-red-600"
-                >
-                  Delete Account
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
       </CardContent>
     </Card>
   );

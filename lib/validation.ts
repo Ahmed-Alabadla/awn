@@ -96,13 +96,17 @@ export const profileSchema = z.object({
 
   phone: z
     .string()
-    .min(6, { message: "Phone number must be at least 6 characters long" })
-    .max(20, { message: "Phone number must be at most 20 characters long" })
-    .regex(/^\+\d{6,}$/, {
-      message:
-        "phone must be a valid international number with country code (e.g., +970597762451)",
-    })
-    .optional(),
+    .optional()
+    .refine(
+      (val) => {
+        if (!val || val === "") return true; // Allow empty values
+        return /^\+\d{6,20}$/.test(val);
+      },
+      {
+        message:
+          "Phone must be a valid international number with country code (e.g., +970597762451)",
+      }
+    ),
 
   profile_image: z
     .union([

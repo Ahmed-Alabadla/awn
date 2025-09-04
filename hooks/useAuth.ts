@@ -7,6 +7,8 @@ import {
   ForgotPasswordValues,
   LoginValues,
   OrganizationRegisterValues,
+  ProfileFormValues,
+  ResetPasswordValues,
   UserRegisterValues,
 } from "@/lib/validation";
 import { ApiError } from "@/lib/types";
@@ -20,6 +22,14 @@ export const useAuth = () => {
     queryKey: ["auth", "status"],
     queryFn: () => authService.isAuthenticated(),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    initialData: () => {
+      // Immediately check authentication status from cookies
+      return authService.isAuthenticated();
+    },
   });
 
   // Get current user data
@@ -156,6 +166,42 @@ export const useAuth = () => {
     },
   });
 
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: ProfileFormValues) => authService.updateProfile(data),
+    onSuccess: (updatedUser) => {
+      // Update the user data in the cache
+      queryClient.setQueryData(["auth", "user"], updatedUser);
+      toast.success("Profile updated successfully!");
+    },
+    onError: (error: ApiError) => {
+      const errorStatusText = error?.response?.statusText || "Unknown error";
+
+      const errorData = error?.response?.data;
+      let errorMessage: string | null = null;
+
+      if (errorData) {
+        // case: validation errors are key -> array
+        if (errorData.errors) {
+          const firstKey = Object.keys(errorData.errors)[0];
+          if (firstKey) {
+            errorMessage = errorData.errors[firstKey][0]; // first error message
+          }
+        }
+
+        // fallback to `message` or `detail`
+        if (!errorMessage) {
+          errorMessage = errorData.message || errorData.detail || null;
+        }
+      }
+
+      toast.error(errorStatusText, {
+        description:
+          errorMessage || "Failed to update profile. Please try again.",
+      });
+    },
+  });
+
   // Forgot password
   const forgotPasswordMutation = useMutation({
     mutationFn: (data: ForgotPasswordValues) =>
@@ -178,6 +224,42 @@ export const useAuth = () => {
         firstErrorMessage ||
         error?.response?.data?.message ||
         "Forgot password request failed. Please try again.";
+
+      toast.error(errorStatusText, {
+        description: errorMessage,
+      });
+    },
+  });
+
+  // Reset password mutation
+  const resetPasswordMutation = useMutation({
+    mutationFn: ({
+      userId,
+      token,
+      data,
+    }: {
+      userId: string;
+      token: string;
+      data: ResetPasswordValues;
+    }) => authService.resetPassword(userId, token, data),
+    onSuccess: () => {
+      toast.success("Password reset successfully!");
+      router.push("/login");
+    },
+    onError: (error: ApiError) => {
+      const errorStatusText = error?.response?.statusText || "Unknown error";
+
+      const errors = error?.response?.data?.errors;
+      const firstErrorMessage =
+        errors && Object.keys(errors).length > 0
+          ? errors[Object.keys(errors)[0]][0] // first field’s first error
+          : null;
+
+      const errorMessage =
+        error?.response?.data?.detail ||
+        firstErrorMessage ||
+        error?.response?.data?.message ||
+        "Password reset failed. Please try again.";
 
       toast.error(errorStatusText, {
         description: errorMessage,
@@ -223,7 +305,9 @@ export const useAuth = () => {
     userRegister: userRegisterMutation.mutate,
     organizationRegister: organizationRegisterMutation.mutate,
     changePassword: changePasswordMutation.mutate,
+    updateProfile: updateProfileMutation.mutate,
     forgotPassword: forgotPasswordMutation.mutate,
+    resetPassword: resetPasswordMutation.mutate,
     logout: logoutMutation.mutate,
     getTokens,
 
@@ -232,7 +316,9 @@ export const useAuth = () => {
     isUserRegisterPending: userRegisterMutation.isPending,
     isOrganizationRegisterPending: organizationRegisterMutation.isPending,
     isChangePasswordPending: changePasswordMutation.isPending,
+    isUpdateProfilePending: updateProfileMutation.isPending,
     isForgotPasswordPending: forgotPasswordMutation.isPending,
+    isResetPasswordPending: resetPasswordMutation.isPending,
     isLogoutPending: logoutMutation.isPending,
     loginError: loginMutation.error,
   };

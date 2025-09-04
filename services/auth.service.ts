@@ -4,6 +4,7 @@ import {
   ForgotPasswordValues,
   LoginValues,
   OrganizationRegisterValues,
+  ProfileFormValues,
   ResetPasswordValues,
   UserRegisterValues,
 } from "@/lib/validation";
@@ -81,6 +82,38 @@ export const authService = {
     return response.data;
   },
 
+  // Update profile
+  updateProfile: async (data: ProfileFormValues): Promise<User> => {
+    // Check if profile_image is a File to determine if we need FormData
+    const hasFile = data.profile_image instanceof File;
+
+    if (hasFile) {
+      // Use FormData for file upload
+      const formData = new FormData();
+
+      // Add other fields to FormData
+      if (data.name) formData.append("name", data.name);
+      if (data.phone) formData.append("phone", data.phone);
+      if (data.profile_image)
+        formData.append("profile_image", data.profile_image);
+
+      const response = await api.put(
+        "/awn/api/auth/update-profile/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data.data;
+    } else {
+      // Use regular JSON for other data
+      const response = await api.put("/awn/api/auth/update-profile/", data);
+      return response.data.data;
+    }
+  },
+
   // Logout
   logout: async () => {
     const { refreshToken } = authService.getTokens();
@@ -111,7 +144,15 @@ export const authService = {
 
   // Check if user is authenticated
   isAuthenticated: () => {
-    const { accessToken } = authService.getTokens();
-    return !!accessToken;
+    const { accessToken, refreshToken } = authService.getTokens();
+
+    // If no tokens exist, user is not authenticated
+    if (!accessToken && !refreshToken) {
+      return false;
+    }
+
+    // If we have at least an access token, consider user authenticated
+    // The axios interceptor will handle token refresh if needed
+    return !!accessToken || !!refreshToken;
   },
 };

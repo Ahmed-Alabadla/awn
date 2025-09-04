@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ResetPasswordFormProps {
   userId: string;
@@ -20,6 +21,8 @@ export default function ResetPasswordForm({
 }: ResetPasswordFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const { resetPassword, isResetPasswordPending } = useAuth();
 
   const {
     register,
@@ -34,9 +37,7 @@ export default function ResetPasswordForm({
   });
 
   const onSubmit = async (data: ResetPasswordValues) => {
-    console.log("Resetting password for user:", userId);
-    console.log("Reset token:", token);
-    console.log("New password:", data.password);
+    resetPassword({ userId, token, data });
   };
 
   return (
@@ -53,6 +54,7 @@ export default function ResetPasswordForm({
               type={showPassword ? "text" : "password"}
               placeholder="Minimum 8 characters"
               {...register("password")}
+              disabled={isResetPasswordPending}
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
             />
@@ -92,6 +94,7 @@ export default function ResetPasswordForm({
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm your password"
               {...register("password_confirm")}
+              disabled={isResetPasswordPending}
               aria-invalid={!!errors.password_confirm}
               aria-describedby={
                 errors.password_confirm ? "confirm-password-error" : undefined
@@ -126,8 +129,7 @@ export default function ResetPasswordForm({
         </div>
 
         <Button type="submit" className="w-full" variant="hero">
-          {/* {isLoading ? "Resetting Password..." : "Reset Password"} */}
-          <span>Reset Password</span>
+          {isResetPasswordPending ? "Resetting Password..." : "Reset Password"}
         </Button>
       </form>
       <div className="mt-6 text-center space-y-2">

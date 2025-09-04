@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-subtle-gradient py-20 lg:py-24">
+    <section id="home" className="relative overflow-hidden bg-subtle-gradient py-20 lg:py-24">
       {/* <div className="fixed inset-0 bg-hero-gradient opacity-5 pointer-events-none"></div> */}
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
