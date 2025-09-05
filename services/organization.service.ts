@@ -19,7 +19,7 @@ export const organizationService = {
     organizationId: number
   ): Promise<Announcement[]> => {
     const response = await api.get(
-      `/awn/api/organizations/${organizationId}/announcements/`
+      `/awn/api/announcements?organization=${organizationId}`
     );
     return response.data.data;
   },

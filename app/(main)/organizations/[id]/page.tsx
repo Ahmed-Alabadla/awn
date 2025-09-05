@@ -25,7 +25,10 @@ import AnnouncementCard from "@/components/shared/AnnouncementCard";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Mail, Phone, Globe, MapPin, Calendar } from "lucide-react";
-import { useOrganizationById } from "@/hooks/useOrganization";
+import {
+  useOrganizationAnnouncements,
+  useOrganizationById,
+} from "@/hooks/useOrganization";
 
 export default function OrganizationDetailPage() {
   const params = useParams();
@@ -35,8 +38,8 @@ export default function OrganizationDetailPage() {
 
   const { organization, isLoadingOrganization } =
     useOrganizationById(organizationId);
-  // const { announcements = [], isLoadingAnnouncements } =
-  //   useOrganizationAnnouncements(organizationId);
+  const { announcements, isLoadingAnnouncements } =
+    useOrganizationAnnouncements(organizationId);
 
   function toggleFavorite(announcement: Announcement) {
     setFavorites((prev) => {
@@ -49,8 +52,7 @@ export default function OrganizationDetailPage() {
     });
   }
 
-  // if (isLoadingOrganization || isLoadingAnnouncements) {
-  if (isLoadingOrganization) {
+  if (isLoadingOrganization || isLoadingAnnouncements) {
     return (
       <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -253,7 +255,7 @@ export default function OrganizationDetailPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* {announcements.length > 0 ? (
+            {announcements && announcements.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {announcements.map((announcement) => (
                   <AnnouncementCard
@@ -265,16 +267,16 @@ export default function OrganizationDetailPage() {
                 ))}
               </div>
             ) : (
-            )} */}
-            <div className="text-center py-12">
-              <div className="text-muted-foreground">
-                <p className="text-lg mb-2">No active programs</p>
-                <p>
-                  This organization doesn&apos;t have any active aid programs at
-                  the moment.
-                </p>
+              <div className="text-center py-12">
+                <div className="text-muted-foreground">
+                  <p className="text-lg mb-2">No active programs</p>
+                  <p>
+                    This organization doesn&apos;t have any active aid programs
+                    at the moment.
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

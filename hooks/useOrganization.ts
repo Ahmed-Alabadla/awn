@@ -29,17 +29,17 @@ export const useOrganizationById = (id: number) => {
   };
 };
 
-// export const useOrganizationAnnouncements = (organizationId: number) => {
-//   const { data: announcements, isLoading: isLoadingAnnouncements } = useQuery({
-//     queryKey: ["organization-announcements", organizationId],
-//     queryFn: () =>
-//       organizationService.getOrganizationAnnouncements(organizationId),
-//     enabled: !!organizationId,
-//     refetchOnWindowFocus: false,
-//   });
+export const useOrganizationAnnouncements = (organizationId: number) => {
+  const { data: announcements, isLoading: isLoadingAnnouncements } = useQuery({
+    queryKey: ["organization-announcements", organizationId],
+    queryFn: () =>
+      organizationService.getOrganizationAnnouncements(organizationId),
+    enabled: !!organizationId,
+    refetchOnWindowFocus: false,
+  });
 
-//   return {
-//     announcements,
-//     isLoadingAnnouncements,
-//   };
-// };
+  return {
+    announcements,
+    isLoadingAnnouncements,
+  };
+};
