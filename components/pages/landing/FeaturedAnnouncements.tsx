@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Announcement } from "@/lib/types";
-import AnnouncementCard from "./AnnouncementCard";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import AnnouncementCard from "@/components/shared/AnnouncementCard";
 
 const announcements: Announcement[] = [
   {

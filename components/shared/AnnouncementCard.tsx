@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,11 +18,10 @@ export default function AnnouncementCard({
   isFavorite,
   onToggleFavorite,
 }: {
-    announcement: Announcement;
-    isFavorite: boolean;
-    onToggleFavorite: () => void;
+  announcement: Announcement;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }) {
-  
   // Calculate days left until deadline
   const calculateDaysLeft = (endDate: Date): string => {
     const today = new Date();
@@ -61,12 +59,15 @@ export default function AnnouncementCard({
           {/* Favorite button */}
           <button
             onClick={onToggleFavorite}
-            className={`transition ${isFavorite ? "text-red-600" : "text-gray-400 hover:text-red-500"}`}
+            className={`transition ${
+              isFavorite ? "text-red-600" : "text-gray-400 hover:text-red-500"
+            }`}
           >
-            <Heart className="w-5 h-5" fill={isFavorite ? "currentColor" : "none"} />
+            <Heart
+              className="w-5 h-5"
+              fill={isFavorite ? "currentColor" : "none"}
+            />
           </button>
-
-
         </div>
 
         <CardTitle className="text-xl group-hover:text-primary transition-colors">
@@ -86,12 +87,13 @@ export default function AnnouncementCard({
           <div className="flex items-center gap-2 text-sm">
             <Clock className="w-4 h-4" />
             <span
-              className={`font-medium ${isExpired
+              className={`font-medium ${
+                isExpired
                   ? "text-red-600"
                   : isUrgent
-                    ? "text-orange-600"
-                    : "text-muted-foreground"
-                }`}
+                  ? "text-orange-600"
+                  : "text-muted-foreground"
+              }`}
             >
               {daysLeft}
             </span>
