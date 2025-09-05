@@ -15,14 +15,14 @@ export const metadata: Metadata = {
 };
 
 interface ResetPasswordPageProps {
-  params: {
+  params: Promise<{
     userId: string;
     token: string;
-  };
+  }>;
 }
 
-export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
-  const { userId, token } = params;
+export default async function ResetPasswordPage({ params }: ResetPasswordPageProps) {
+  const { userId, token } = await params;
 
   return (
     <Card className="w-full max-w-md shadow-elegant">
