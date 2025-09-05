@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Announcement } from "@/lib/types";
-import AnnouncementCard from "./AnnouncementCard";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
+import AnnouncementCard from "@/components/shared/AnnouncementCard";
 
 const announcements: Announcement[] = [
   {
@@ -95,9 +96,11 @@ export default function FeaturedAnnouncements() {
         </div>
 
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg">
-            View All Announcements
-            <ArrowRight className="w-5 h-5 ml-2" />
+          <Button variant="outline" size="lg" asChild>
+            <Link href="/login">
+              View All Announcements
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Link>
           </Button>
         </div>
       </div>

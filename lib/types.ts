@@ -31,6 +31,21 @@ export interface AuthResponse {
   refresh: string;
 }
 
+export interface Organization {
+  id: number;
+  organization_name: string;
+  profile_image: string | null;
+  description: string;
+  website?: string;
+  location?: string;
+  verified: boolean;
+  is_active: boolean;
+  email?: string;
+  phone?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 export interface ApiError {
   response?: {
     status?: number;

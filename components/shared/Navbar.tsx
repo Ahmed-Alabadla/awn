@@ -46,14 +46,14 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo  */}
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center gap-2">
+            <Link href="/" className="flex-shrink-0 flex items-center gap-2">
               <div className="w-8 h-8 bg-hero-gradient rounded-lg flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold bg-hero-gradient bg-clip-text text-transparent">
                 Awn
               </span>
-            </div>
+            </Link>
           </div>
 
           {/* Navigation Links (only when not authenticated) */}
