@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Clock, Heart, ArrowRight } from "lucide-react";
 import { Announcement } from "@/lib/types";
+import Image from "next/image";
 
 export default function AnnouncementCard({
   announcement,
@@ -22,11 +23,10 @@ export default function AnnouncementCard({
   isFavorite: boolean;
   onToggleFavorite: () => void;
 }) {
-  // Calculate days left until deadline
-  const calculateDaysLeft = (endDate: Date): string => {
+
+  const calculateDaysLeft = (endDate: string): string => {
     const today = new Date();
     const end = new Date(endDate);
-
     today.setHours(0, 0, 0, 0);
     end.setHours(0, 0, 0, 0);
 
@@ -39,7 +39,11 @@ export default function AnnouncementCard({
     return `${diffDays} days left`;
   };
 
-  const daysLeft = calculateDaysLeft(announcement.end_date);
+  // ✅ Always treat end_date as string
+  const daysLeft = announcement.end_date
+    ? calculateDaysLeft(String(announcement.end_date))
+    : "Expired";
+
   const isExpired = daysLeft === "Expired";
   const isUrgent =
     !isExpired &&
@@ -48,28 +52,33 @@ export default function AnnouncementCard({
       (parseInt(daysLeft) <= 3 && parseInt(daysLeft) > 0));
 
   return (
-    <Card
-      key={announcement.id}
-      className="group hover:shadow-hero transition-all duration-300 hover:-translate-y-0.5"
-    >
+    <Card className="group hover:shadow-hero transition-all duration-300 hover:-translate-y-0.5">
+      {announcement.image && (
+        <Image
+          src={announcement.image}
+          alt={announcement.title}
+          width={800}
+          height={192}
+          className="w-full h-48 object-cover rounded-t-2xl"
+          priority
+        />
+      )}
+
       <CardHeader>
         <div className="flex items-start justify-between mb-2">
           <Badge variant="outline">{announcement.category_name}</Badge>
-
-          {/* Favorite button */}
           <button
             onClick={onToggleFavorite}
-            className={`transition ${
-              isFavorite ? "text-red-600" : "text-gray-400 hover:text-red-500"
-            }`}
+            className={`transition ${isFavorite ? "text-red-600" : "text-gray-400 hover:text-red-500"
+              }`}
           >
             <Heart
               className="w-5 h-5"
               fill={isFavorite ? "currentColor" : "none"}
             />
           </button>
-        </div>
 
+        </div>
         <CardTitle className="text-xl group-hover:text-primary transition-colors">
           {announcement.title}
         </CardTitle>
@@ -82,28 +91,26 @@ export default function AnnouncementCard({
         <p className="text-foreground leading-relaxed">
           {announcement.description}
         </p>
-
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="w-4 h-4" />
-            <span
-              className={`font-medium ${
-                isExpired
-                  ? "text-red-600"
-                  : isUrgent
+        <div className="flex items-center gap-2 text-sm">
+          <Clock className="w-4 h-4" />
+          <span
+            className={`font-medium ${isExpired
+                ? "text-red-600"
+                : isUrgent
                   ? "text-orange-600"
                   : "text-muted-foreground"
               }`}
-            >
-              {daysLeft}
-            </span>
-          </div>
+          >
+            {daysLeft}
+          </span>
         </div>
       </CardContent>
 
       <CardFooter className="flex gap-2">
-        <Button variant="hero" className="flex-1 group">
-          Apply Now
+        <Button asChild variant="hero" className="flex-1 group">
+          <a href={announcement.url} target="_blank" rel="noopener noreferrer">
+            Apply Now
+          </a>
         </Button>
         <Button variant="outline" size="icon">
           <ArrowRight className="w-4 h-4" />
