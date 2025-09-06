@@ -1,5 +1,5 @@
 export interface Announcement {
-  organization: any;
+  organization: string;
   category: string;
   id: number;
   title: string;
