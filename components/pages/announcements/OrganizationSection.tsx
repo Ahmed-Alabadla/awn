@@ -13,14 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { useOrganizations } from "@/hooks/useOrganization";
 
 const PAGE_SIZE = 6;
@@ -28,9 +21,6 @@ const PAGE_SIZE = 6;
 export default function OrganizationSection() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [filterVerified, setFilterVerified] = useState<
-    "all" | "verified" | "pending"
-  >("all");
 
   const { organizations = [], isLoadingOrganizations } = useOrganizations();
 
@@ -40,12 +30,7 @@ export default function OrganizationSection() {
       org.organization_name.toLowerCase().includes(search.toLowerCase()) ||
       org.description.toLowerCase().includes(search.toLowerCase());
 
-    const matchesVerification =
-      filterVerified === "all" ||
-      (filterVerified === "verified" && org.verified) ||
-      (filterVerified === "pending" && !org.verified);
-
-    return matchesSearch && matchesVerification;
+    return matchesSearch;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -53,11 +38,6 @@ export default function OrganizationSection() {
 
   function handleSearchChange(value: string) {
     setSearch(value);
-    setPage(1);
-  }
-
-  function handleFilterChange(value: "all" | "verified" | "pending") {
-    setFilterVerified(value);
     setPage(1);
   }
 
@@ -88,26 +68,12 @@ export default function OrganizationSection() {
             onChange={(e) => handleSearchChange(e.target.value)}
             className="flex-1 px-3 py-2"
           />
-
-          <Select value={filterVerified} onValueChange={handleFilterChange}>
-            <SelectTrigger className="w-52">
-              <SelectValue placeholder="Filter by type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="all">All Organizations</SelectItem>
-                <SelectItem value="verified">Verified Organizations</SelectItem>
-                <SelectItem value="pending">Pending Verification</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="mt-4 text-sm text-muted-foreground">
           Showing {filtered.length} organization
           {filtered.length !== 1 ? "s" : ""}
           {search && ` matching "${search}"`}
-          {filterVerified !== "all" && ` (${filterVerified})`}
         </div>
       </div>
 

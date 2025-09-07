@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { authService } from "@/services/auth.service";
 import {
@@ -16,6 +16,7 @@ import { ApiError } from "@/lib/types";
 export const useAuth = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Check authentication status
   const { data: isAuthenticated, isLoading: isAuthLoading } = useQuery({
@@ -54,7 +55,10 @@ export const useAuth = () => {
       // Invalidate auth queries to update authentication status
       queryClient.invalidateQueries({ queryKey: ["auth"] });
       toast.success("Login successful!");
-      router.push("/"); // Redirect to home page or dashboard
+      
+      // Get redirect URL from search params or default to home
+      const redirectUrl = searchParams?.get('redirect') || '/';
+      router.push(redirectUrl);
     },
     onError: (error: ApiError) => {
       const errorStatusText = error?.response?.statusText || "Unknown error";

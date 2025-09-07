@@ -4,7 +4,7 @@ import { Organization, Announcement } from "@/lib/types";
 export const organizationService = {
   // Fetch all organizations
   getAllOrganizations: async (): Promise<Organization[]> => {
-    const response = await api.get("/awn/api/organizations");
+    const response = await api.get("/awn/api/organizations/verified");
     return response.data;
   },
 

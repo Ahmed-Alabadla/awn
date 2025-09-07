@@ -55,7 +55,7 @@ const {
 
 ### 5. Protected Routes
 
-- `AuthGuard` component for protecting routes
+- `RouteGuard` component for protecting routes with flexible authentication requirements
 - Automatic redirect to login for unauthenticated users
 - Loading states during authentication checks
 
@@ -70,13 +70,13 @@ const {
 ### Protecting a Route
 
 ```tsx
-import AuthGuard from "@/components/AuthGuard";
+import RouteGuard from "@/components/RouteGuard";
 
 export default function ProtectedPage() {
   return (
-    <AuthGuard>
+    <RouteGuard requireAuth={true} redirectTo="/login">
       <YourProtectedContent />
-    </AuthGuard>
+    </RouteGuard>
   );
 }
 ```
@@ -138,9 +138,11 @@ Tokens are stored with the following security settings:
 2. **hooks/useAuth.ts** - React Query authentication hook
 3. **lib/axios.ts** - HTTP client with token interceptors
 4. **lib/types.ts** - TypeScript interfaces
-5. **components/AuthGuard.tsx** - Route protection component
+5. **components/RouteGuard.tsx** - Flexible route protection component
 6. **components/shared/LoginForm.tsx** - Enhanced login form
 7. **components/shared/UserMenu.tsx** - User menu with logout
+8. **lib/route-protection.ts** - Route configuration utilities
+9. **middleware.ts** - Server-side route protection
 
 ## Benefits
 
@@ -158,3 +160,68 @@ Tokens are stored with the following security settings:
 3. Add password reset functionality
 4. Implement remember me functionality
 5. Add multi-factor authentication support
+
+## Route Protection System
+
+### Overview
+
+The route protection system provides multiple layers of security:
+
+1. **Middleware-level protection** - Server-side route protection using Next.js middleware
+2. **Component-level protection** - Client-side route guards using React components
+3. **Authentication hooks** - Centralized authentication state management
+
+### RouteGuard Component
+
+The flexible route protection component that handles both protected and guest-only routes:
+
+```tsx
+import RouteGuard from "@/components/RouteGuard";
+
+// For protected routes (requires authentication)
+<RouteGuard requireAuth={true} redirectTo="/login">
+  <YourProtectedComponent />
+</RouteGuard>
+
+// For guest-only routes (redirects authenticated users)
+<RouteGuard requireAuth={false} redirectTo="/">
+  <YourGuestOnlyComponent />
+</RouteGuard>
+```
+
+### Route Configuration
+
+Configure routes in `lib/route-protection.ts`:
+
+```typescript
+// Routes that require authentication
+export const PROTECTED_ROUTES = [
+  "/profile",
+  "/announcements/[id]",
+  "/organizations/[id]",
+] as const;
+
+// Routes that should only be accessible to non-authenticated users
+export const GUEST_ONLY_ROUTES = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+] as const;
+```
+
+### Middleware Protection
+
+The middleware provides server-side protection with automatic redirects and URL preservation for post-login navigation.
+
+### Current Implementation
+
+**Protected Routes (Require Authentication):**
+
+- `/profile` - User profile page
+- `/announcements/[id]` - Individual announcement details
+- `/organizations/[id]` - Individual organization details
+
+**Guest-Only Routes (Redirect authenticated users):**
+
+- `/login`, `/register`, `/forgot-password`, `/reset-password`

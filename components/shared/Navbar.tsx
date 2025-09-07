@@ -1,22 +1,19 @@
 "use client";
-import { Heart, Menu, X, Bell } from "lucide-react";
+import { Heart, Menu, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorite } from "@/hooks/useFavorite";
-import { useRouter } from "next/navigation";
-import { useTabsStore } from "./useTabsStore";
+import { useTabsStore } from "@/hooks/useTabsStore";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { favorites } = useFavorite();
-  const router = useRouter();
   const { setActiveTab } = useTabsStore();
 
-
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
     return (
@@ -109,22 +106,23 @@ export default function Navbar() {
             {isAuthenticated ? (
               /* Authenticated: Notifications, Favorites, UserMenu */
               <>
-                {/* Notifications */}
                 {/* Favorites */}
-                <div className="relative">
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                {user?.role === "user" && (
+                  <Link
+                    href="/"
+                    className="relative"
                     onClick={() => setActiveTab("Favorites")}
                   >
-                    <Heart className="w-5 h-5" />
-                  </Button>
-                  {favorites.length > 0 && (
-                    <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {favorites.length}
-                    </span>
-                  )}
-                </div>
+                    <Button variant="ghost" size="icon">
+                      <Heart className="w-5 h-5" />
+                    </Button>
+                    {favorites.length > 0 && (
+                      <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {favorites.length}
+                      </span>
+                    )}
+                  </Link>
+                )}
 
                 {/* User Menu */}
                 <UserMenu />

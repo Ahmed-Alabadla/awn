@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Announcement } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -12,15 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-  DialogHeader,
-} from "@/components/ui/dialog";
 import AnnouncementCard from "@/components/shared/AnnouncementCard";
 import Link from "next/link";
 import Image from "next/image";
@@ -29,10 +19,12 @@ import {
   useOrganizationAnnouncements,
   useOrganizationById,
 } from "@/hooks/useOrganization";
+import { useTabsStore } from "@/hooks/useTabsStore";
+import { useFavorite } from "@/hooks/useFavorite";
 
 export default function OrganizationDetailPage() {
   const params = useParams();
-  const [favorites, setFavorites] = useState<Announcement[]>([]);
+  const { setActiveTab } = useTabsStore();
 
   const organizationId = Number(params.id);
 
@@ -41,16 +33,18 @@ export default function OrganizationDetailPage() {
   const { announcements, isLoadingAnnouncements } =
     useOrganizationAnnouncements(organizationId);
 
-  function toggleFavorite(announcement: Announcement) {
-    setFavorites((prev) => {
-      const isAlreadyFavorite = prev.some((a) => a.id === announcement.id);
-      if (isAlreadyFavorite) {
-        return prev.filter((a) => a.id !== announcement.id);
-      } else {
-        return [...prev, announcement];
-      }
-    });
-  }
+  // Favorites
+  const { favorites, addFavorite, removeFavorite } = useFavorite();
+
+  const toggleFavorite = async (announcement: Announcement) => {
+    const isFav = favorites.some((f) => f.id === announcement.id);
+
+    if (isFav) {
+      await removeFavorite(announcement.id);
+    } else {
+      await addFavorite(announcement.id);
+    }
+  };
 
   if (isLoadingOrganization || isLoadingAnnouncements) {
     return (
@@ -94,7 +88,7 @@ export default function OrganizationDetailPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="mb-6">
-          <Link href="/?tab=Organizations">
+          <Link href="/" onClick={() => setActiveTab("Organizations")}>
             <Button variant="outline" className="mb-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Organizations
@@ -102,76 +96,85 @@ export default function OrganizationDetailPage() {
           </Link>
         </div>
 
-        {/* Organization Header */}
-        <Card className="mb-8">
-          <CardHeader>
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-              <div className="flex gap-6">
-                {organization.profile_image ? (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Avatar className="w-24 h-24 border-2 border-border cursor-pointer hover:opacity-80 transition-opacity">
-                        <AvatarImage
-                          src={organization.profile_image}
-                          alt={`${organization.organization_name} profile`}
-                        />
-                        <AvatarFallback className="text-2xl font-bold">
-                          {organization.organization_name
-                            .charAt(0)
-                            .toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
-                      <DialogHeader>
-                        <DialogTitle>
-                          {organization.organization_name}
-                        </DialogTitle>
-                      </DialogHeader>
-                      <div className="flex justify-center">
-                        <Image
-                          src={organization.profile_image}
-                          alt={`${organization.organization_name} profile`}
-                          width={400}
-                          height={400}
-                          className="max-w-full max-h-96 object-contain rounded-lg"
-                        />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                ) : (
-                  <Avatar className="w-24 h-24 border-2 border-border">
-                    <AvatarImage
-                      src={organization.profile_image || undefined}
-                      alt={`${organization.organization_name} profile`}
-                    />
-                    <AvatarFallback className="text-2xl font-bold">
-                      {organization.organization_name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <h1 className="text-3xl font-bold">
-                      {organization.organization_name}
-                    </h1>
-                    <Badge
-                      variant={organization.verified ? "default" : "secondary"}
-                    >
-                      {organization.verified ? "Verified" : "Pending"}
-                    </Badge>
-                  </div>
-                  <p className="text-lg text-muted-foreground mb-4">
-                    {organization.description}
-                  </p>
+        {/* Organization Hero Section */}
+        <div className="relative mb-8">
+          {/* Background Image */}
+          <div className="relative h-48 sm:h-56 md:h-64 lg:h-80 overflow-hidden rounded-lg">
+            {organization.profile_image ? (
+              <Image
+                src={organization.profile_image}
+                alt={organization.organization_name}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[#0086cb] to-[#009550]" />
+            )}
+
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-lg" />
+
+            {/* Verification Badge */}
+            <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex items-center gap-2">
+              <Badge
+                variant={organization.verified ? "default" : "secondary"}
+                className={`${
+                  organization.verified
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-gray-600 hover:bg-gray-700"
+                } text-white text-xs sm:text-sm`}
+              >
+                {organization.verified
+                  ? "Verified Organization"
+                  : "Pending Verification"}
+              </Badge>
+            </div>
+
+            {/* Organization Name - Overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-6 text-white">
+              <div>
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-white drop-shadow-lg [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
+                  {organization.organization_name}
+                </h1>
+                <div className="flex items-center gap-2 text-white/90 text-xs sm:text-sm drop-shadow-md [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span>
+                    Member since{" "}
+                    {new Date(organization.created_at).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "long",
+                      }
+                    )}
+                  </span>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* About Section */}
+        <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
+          <h2 className="text-lg font-semibold mb-4">
+            About this organization
+          </h2>
+          <p className="text-gray-700 leading-relaxed">
+            {organization.description}
+          </p>
+        </div>
+
+        {/* Organization Details Card */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="text-xl">Organization Details</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-muted-foreground" />
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Mail className="h-5 w-5 text-blue-600" />
+                </div>
                 <div>
                   <p className="text-sm font-medium">Email</p>
                   <p className="text-sm text-muted-foreground">
@@ -182,7 +185,9 @@ export default function OrganizationDetailPage() {
 
               {organization.phone && (
                 <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-muted-foreground" />
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <Phone className="h-5 w-5 text-green-600" />
+                  </div>
                   <div>
                     <p className="text-sm font-medium">Phone</p>
                     <p className="text-sm text-muted-foreground">
@@ -194,7 +199,9 @@ export default function OrganizationDetailPage() {
 
               {organization.website && (
                 <div className="flex items-center gap-3">
-                  <Globe className="h-5 w-5 text-muted-foreground" />
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <Globe className="h-5 w-5 text-purple-600" />
+                  </div>
                   <div>
                     <p className="text-sm font-medium">Website</p>
                     <Link
@@ -211,7 +218,9 @@ export default function OrganizationDetailPage() {
 
               {organization.location && (
                 <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-muted-foreground" />
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <MapPin className="h-5 w-5 text-orange-600" />
+                  </div>
                   <div>
                     <p className="text-sm font-medium">Location</p>
                     <p className="text-sm text-muted-foreground">
@@ -220,25 +229,6 @@ export default function OrganizationDetailPage() {
                   </div>
                 </div>
               )}
-            </div>
-
-            <Separator className="my-6" />
-
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Member Since</p>
-                <p className="text-sm text-muted-foreground">
-                  {new Date(organization.created_at).toLocaleDateString(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )}
-                </p>
-              </div>
             </div>
           </CardContent>
         </Card>

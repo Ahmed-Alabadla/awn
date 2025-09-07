@@ -51,64 +51,71 @@ export default function AnnouncementCard({
       (parseInt(daysLeft) <= 3 && parseInt(daysLeft) > 0));
 
   return (
-    <Card className="group hover:shadow-hero transition-all duration-300 hover:-translate-y-0.5">
+    <Card className="group hover:shadow-hero transition-all duration-300 hover:-translate-y-0.5 pt-0 flex flex-col h-full">
       {/* Wrap clickable area */}
-      <Link href={`/announcements/${announcement.id}`} className="block">
-        {announcement.image && (
-          <Image
-            src={announcement.image}
-            alt={announcement.title}
-            width={800}
-            height={192}
-            className="w-full h-48 object-cover rounded-t-2xl"
-            priority
-          />
-        )}
 
-        <CardHeader>
-          <div className="flex items-start justify-between mb-2 mt-2">
-            <Badge variant="outline">{announcement.category_name}</Badge>
-            <button
-              onClick={(e) => {
-                e.preventDefault(); // stop link click
-                onToggleFavorite();
-              }}
-              className={`transition ${isFavorite ? "text-red-600" : "text-gray-400 hover:text-red-500"
-                }`}
-            >
-              <Heart
-                className="w-5 h-5"
-                fill={isFavorite ? "currentColor" : "none"}
-              />
-            </button>
-          </div>
+      {announcement.image && (
+        <Image
+          src={announcement.image}
+          alt={announcement.title}
+          width={800}
+          height={192}
+          className="w-full h-48 object-cover rounded-t-2xl"
+          priority
+        />
+      )}
+
+      <CardHeader>
+        <div className="flex items-start justify-between ">
+          <Badge variant="outline">{announcement.category_name}</Badge>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.preventDefault(); // stop link click
+              onToggleFavorite();
+            }}
+            className={`shrink-0 transition-colors hover:bg-background ${
+              isFavorite
+                ? "text-white bg-red-500 hover:bg-red-600"
+                : "text-gray-400 hover:text-red-500 hover:border-red-500"
+            }`}
+          >
+            <Heart
+              className="w-5 h-5"
+              fill={isFavorite ? "currentColor" : "none"}
+            />
+          </Button>
+        </div>
+        <Link href={`/announcements/${announcement.id}`}>
           <CardTitle className="text-xl group-hover:text-primary transition-colors">
             {announcement.title}
           </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground font-medium">
-            {announcement.organization_name}
-          </CardDescription>
-        </CardHeader>
+        </Link>
+        <CardDescription className="text-sm text-muted-foreground font-medium">
+          {announcement.organization_name}
+        </CardDescription>
+      </CardHeader>
 
-        <CardContent className="space-y-4">
-          <p className="text-foreground leading-relaxed">
-            {announcement.description}
-          </p>
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="w-4 h-4" />
-            <span
-              className={`font-medium ${isExpired
-                  ? "text-red-600"
-                  : isUrgent
-                    ? "text-orange-600"
-                    : "text-muted-foreground"
-                }`}
-            >
-              {daysLeft}
-            </span>
-          </div>
-        </CardContent>
-      </Link>
+      <CardContent className="space-y-4">
+        <p className="text-foreground leading-relaxed line-clamp-2 overflow-hidden">
+          {announcement.description}
+        </p>
+        <div className="flex items-center gap-2 text-sm">
+          <Clock className="w-4 h-4" />
+          <span
+            className={`font-medium ${
+              isExpired
+                ? "text-red-600"
+                : isUrgent
+                ? "text-orange-600"
+                : "text-muted-foreground"
+            }`}
+          >
+            {daysLeft}
+          </span>
+        </div>
+      </CardContent>
 
       <CardFooter className="flex gap-2">
         <Button asChild variant="hero" className="flex-1 group">

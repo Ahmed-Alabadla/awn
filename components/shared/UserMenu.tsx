@@ -11,13 +11,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { LogOut, User } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function UserMenu() {
   const { logout, isLogoutPending, user } = useAuth();
+  const [userProfile, setUserProfile] = useState(user?.profile_image);
 
   const handleLogout = () => {
     logout();
   };
+
+  useEffect(() => {
+    setUserProfile(user?.profile_image);
+  }, [user?.profile_image]);
 
   const getInitials = (name: string) => {
     return name
@@ -33,13 +39,12 @@ export default function UserMenu() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10 border hover:text-primary">
-            {user?.profile_image && (
-              <AvatarImage
-                src={user.profile_image}
-                alt="avatar"
-                className="object-contain"
-              />
-            )}
+            <AvatarImage
+              src={userProfile}
+              alt="avatar"
+              className="object-contain"
+            />
+
             <AvatarFallback>
               {user?.name ? getInitials(user.name) : "U"}
             </AvatarFallback>

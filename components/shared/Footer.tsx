@@ -27,7 +27,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/announcements"
+                  href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Browse Announcements
@@ -35,7 +35,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/search"
+                  href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Search
@@ -43,7 +43,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/categories"
+                  href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Categories
@@ -51,10 +51,18 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/help"
+                  href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Help & Support
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/faq"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  FAQ
                 </Link>
               </li>
             </ul>
@@ -65,7 +73,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/about"
+                  href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   About Us
@@ -73,7 +81,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/blog"
+                  href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Blog
@@ -81,7 +89,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/contact"
+                  href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Contact
@@ -89,7 +97,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/careers"
+                  href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Careers
@@ -101,26 +109,26 @@ export default function Footer() {
 
         <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-muted-foreground text-sm">
-            © 2025 Awn. All rights reserved.
+            © {new Date().getFullYear()} Awn. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link
-              href="/privacy"
+              href="/faq"
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              FAQ
+            </Link>
+            <Link
+              href="#"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
-              href="/terms"
+              href="#"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               Terms of Service
-            </Link>
-            <Link
-              href="/cookies"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              Cookie Policy
             </Link>
           </div>
         </div>

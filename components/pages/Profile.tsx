@@ -33,8 +33,8 @@ import {
 } from "@/lib/validation";
 import { usePasswordStrength } from "@/hooks/use-password-strength";
 import { useAuth } from "@/hooks/useAuth";
-import { ImageDropzone } from "./ImageDropzone";
 import { Eye, EyeOff } from "lucide-react";
+import { ImageDropzone } from "../shared/ImageDropzone";
 
 export default function Profile() {
   const [showPassword, setShowPassword] = useState(false);

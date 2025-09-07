@@ -1,12 +1,17 @@
+export interface Category {
+  id: number;
+  name: string;
+  announcements_count: number;
+}
+
 export interface Announcement {
-  organization: string;
-  category: string;
   id: number;
   title: string;
   description: string;
   start_date: Date;
   end_date: Date;
   url: string;
+
   category_name: string;
   organization_name: string;
   creator_name: string;
@@ -15,6 +20,8 @@ export interface Announcement {
   created_at: Date;
   updated_at: Date;
   image: string;
+
+  category?: Category;
 }
 
 export interface User {
