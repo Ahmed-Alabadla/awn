@@ -13,10 +13,18 @@ import {
 } from "@/lib/validation";
 import { ApiError } from "@/lib/types";
 
+function useSearchParamsWithFallback() {
+  try {
+    return useSearchParams();
+  } catch {
+    return null;
+  }
+}
+
 export const useAuth = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParamsWithFallback();
 
   // Check authentication status
   const { data: isAuthenticated, isLoading: isAuthLoading } = useQuery({
@@ -55,9 +63,9 @@ export const useAuth = () => {
       // Invalidate auth queries to update authentication status
       queryClient.invalidateQueries({ queryKey: ["auth"] });
       toast.success("Login successful!");
-      
+
       // Get redirect URL from search params or default to home
-      const redirectUrl = searchParams?.get('redirect') || '/';
+      const redirectUrl = searchParams?.get("redirect") || "/";
       router.push(redirectUrl);
     },
     onError: (error: ApiError) => {
