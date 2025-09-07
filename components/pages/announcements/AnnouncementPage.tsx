@@ -14,6 +14,7 @@ import { useAnnouncements } from "@/hooks/useAnnouncement";
 import { useFavorite } from "@/hooks/useFavorite";
 import AnnouncementsList from "@/components/shared/AnnouncementsList";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTabsStore } from "@/components/shared/useTabsStore";
 
 const PAGE_SIZE = 6;
 const NAV_ITEMS = ["Search Aid", "Favorites", "Organizations", "Notifications", "Reports"];
@@ -33,11 +34,11 @@ export default function AnnouncementPage() {
   const searchParams = useSearchParams();
 
   // Tabs
-  const [activeTab, setActiveTab] = useState("Search Aid");
+  const { activeTab, setActiveTab } = useTabsStore();
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab && NAV_ITEMS.includes(tab)) setActiveTab(tab);
-  }, [searchParams]);
+  }, [searchParams, setActiveTab]);
 
   // Filters
   const [search, setSearch] = useState("");

@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, Heart, ArrowRight } from "lucide-react";
 import { Announcement } from "@/lib/types";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AnnouncementCard({
   announcement,
@@ -23,7 +24,6 @@ export default function AnnouncementCard({
   isFavorite: boolean;
   onToggleFavorite: () => void;
 }) {
-
   const calculateDaysLeft = (endDate: string): string => {
     const today = new Date();
     const end = new Date(endDate);
@@ -39,7 +39,6 @@ export default function AnnouncementCard({
     return `${diffDays} days left`;
   };
 
-  // ✅ Always treat end_date as string
   const daysLeft = announcement.end_date
     ? calculateDaysLeft(String(announcement.end_date))
     : "Expired";
@@ -53,58 +52,63 @@ export default function AnnouncementCard({
 
   return (
     <Card className="group hover:shadow-hero transition-all duration-300 hover:-translate-y-0.5">
-      {announcement.image && (
-        <Image
-          src={announcement.image}
-          alt={announcement.title}
-          width={800}
-          height={192}
-          className="w-full h-48 object-cover rounded-t-2xl"
-          priority
-        />
-      )}
+      {/* Wrap clickable area */}
+      <Link href={`/announcements/${announcement.id}`} className="block">
+        {announcement.image && (
+          <Image
+            src={announcement.image}
+            alt={announcement.title}
+            width={800}
+            height={192}
+            className="w-full h-48 object-cover rounded-t-2xl"
+            priority
+          />
+        )}
 
-      <CardHeader>
-        <div className="flex items-start justify-between mb-2">
-          <Badge variant="outline">{announcement.category_name}</Badge>
-          <button
-            onClick={onToggleFavorite}
-            className={`transition ${isFavorite ? "text-red-600" : "text-gray-400 hover:text-red-500"
-              }`}
-          >
-            <Heart
-              className="w-5 h-5"
-              fill={isFavorite ? "currentColor" : "none"}
-            />
-          </button>
+        <CardHeader>
+          <div className="flex items-start justify-between mb-2 mt-2">
+            <Badge variant="outline">{announcement.category_name}</Badge>
+            <button
+              onClick={(e) => {
+                e.preventDefault(); // stop link click
+                onToggleFavorite();
+              }}
+              className={`transition ${isFavorite ? "text-red-600" : "text-gray-400 hover:text-red-500"
+                }`}
+            >
+              <Heart
+                className="w-5 h-5"
+                fill={isFavorite ? "currentColor" : "none"}
+              />
+            </button>
+          </div>
+          <CardTitle className="text-xl group-hover:text-primary transition-colors">
+            {announcement.title}
+          </CardTitle>
+          <CardDescription className="text-sm text-muted-foreground font-medium">
+            {announcement.organization_name}
+          </CardDescription>
+        </CardHeader>
 
-        </div>
-        <CardTitle className="text-xl group-hover:text-primary transition-colors">
-          {announcement.title}
-        </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground font-medium">
-          {announcement.organization_name}
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="space-y-4">
-        <p className="text-foreground leading-relaxed">
-          {announcement.description}
-        </p>
-        <div className="flex items-center gap-2 text-sm">
-          <Clock className="w-4 h-4" />
-          <span
-            className={`font-medium ${isExpired
-                ? "text-red-600"
-                : isUrgent
-                  ? "text-orange-600"
-                  : "text-muted-foreground"
-              }`}
-          >
-            {daysLeft}
-          </span>
-        </div>
-      </CardContent>
+        <CardContent className="space-y-4">
+          <p className="text-foreground leading-relaxed">
+            {announcement.description}
+          </p>
+          <div className="flex items-center gap-2 text-sm">
+            <Clock className="w-4 h-4" />
+            <span
+              className={`font-medium ${isExpired
+                  ? "text-red-600"
+                  : isUrgent
+                    ? "text-orange-600"
+                    : "text-muted-foreground"
+                }`}
+            >
+              {daysLeft}
+            </span>
+          </div>
+        </CardContent>
+      </Link>
 
       <CardFooter className="flex gap-2">
         <Button asChild variant="hero" className="flex-1 group">
@@ -112,8 +116,11 @@ export default function AnnouncementCard({
             Apply Now
           </a>
         </Button>
-        <Button variant="outline" size="icon">
-          <ArrowRight className="w-4 h-4" />
+        {/* Arrow button also links to detail */}
+        <Button asChild variant="outline" size="icon">
+          <Link href={`/announcements/${announcement.id}`}>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </Button>
       </CardFooter>
     </Card>

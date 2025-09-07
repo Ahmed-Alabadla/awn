@@ -5,9 +5,16 @@ import { useState } from "react";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 import { useAuth } from "@/hooks/useAuth";
+import { useFavorite } from "@/hooks/useFavorite";
+import { useRouter } from "next/navigation";
+import { useTabsStore } from "./useTabsStore";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { favorites } = useFavorite();
+  const router = useRouter();
+  const { setActiveTab } = useTabsStore();
+
 
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -103,23 +110,20 @@ export default function Navbar() {
               /* Authenticated: Notifications, Favorites, UserMenu */
               <>
                 {/* Notifications */}
-                <div className="relative ">
-                  <Button variant="ghost" size="icon">
-                    <Bell className="w-5 h-5" />
-                  </Button>
-                  <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    3
-                  </span>
-                </div>
-
                 {/* Favorites */}
-                <div className="relative ">
-                  <Button variant="ghost" size="icon">
+                <div className="relative">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setActiveTab("Favorites")}
+                  >
                     <Heart className="w-5 h-5" />
                   </Button>
-                  <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    12
-                  </span>
+                  {favorites.length > 0 && (
+                    <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {favorites.length}
+                    </span>
+                  )}
                 </div>
 
                 {/* User Menu */}
