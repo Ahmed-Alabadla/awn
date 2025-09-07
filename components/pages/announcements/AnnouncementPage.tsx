@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import AnnouncementCard from "@/components/shared/AnnouncementCard";
 import { Announcement } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,177 +10,88 @@ import NotificationSection from "./NotificationSection";
 import OrganizationSection from "./OrganizationSection";
 import ReportsSection from "./ReportsSection";
 import { useAuth } from "@/hooks/useAuth";
+import { useAnnouncements } from "@/hooks/useAnnouncement";
+import { useFavorite } from "@/hooks/useFavorite";
+import AnnouncementsList from "@/components/shared/AnnouncementsList";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTabsStore } from "@/components/shared/useTabsStore";
 
 const PAGE_SIZE = 6;
-const NAV_ITEMS = [
-  "Search Aid",
-  "Favorites",
-  "Organizations",
-  "Notifications",
-  "Reports",
-];
+const NAV_ITEMS = ["Search Aid", "Favorites", "Organizations", "Notifications", "Reports"];
 
-function calculateDaysLeft(endDate: Date): number {
+function calculateDaysLeft(endDate: string | Date): number {
   const today = new Date();
   const end = new Date(endDate);
   today.setHours(0, 0, 0, 0);
   end.setHours(0, 0, 0, 0);
-  const diffTime = end.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 
 export default function AnnouncementPage() {
   const { user } = useAuth();
+  const { announcements = [], isLoadingAnnouncements } = useAnnouncements();
+
   const searchParams = useSearchParams();
 
-  const [favorites, setFavorites] = useState<Announcement[]>([]);
-  function toggleFavorite(announcement: Announcement) {
-    setFavorites((prev) => {
-      const isAlreadyFavorite = prev.some((a) => a.id === announcement.id);
-      if (isAlreadyFavorite) {
-        return prev.filter((a) => a.id !== announcement.id);
-      } else {
-        return [...prev, announcement];
-      }
-    });
-  }
-
-  const announcements: Announcement[] = [
-    {
-      id: 1,
-      title: "Emergency Medical Fund",
-      organization_name: "Children's Hope Foundation",
-      description:
-        "Urgent medical assistance for children in need. Providing life-saving treatments and medications.",
-      start_date: new Date(),
-      end_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
-      category_name: "Health",
-      url: "",
-      creator_name: "Admin",
-      status: "active",
-      admin_notes: "",
-      created_at: new Date(),
-      updated_at: new Date(),
-    },
-    {
-      id: 2,
-      title: "Educational Scholarships",
-      organization_name: "Future Leaders Institute",
-      description:
-        "Supporting bright students from underprivileged backgrounds to pursue higher education.",
-      start_date: new Date(),
-      end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      category_name: "Education",
-      url: "",
-      creator_name: "Admin",
-      status: "active",
-      admin_notes: "",
-      created_at: new Date(),
-      updated_at: new Date(),
-    },
-    {
-      id: 3,
-      title: "Food Security Program",
-      organization_name: "Community Care Network",
-      description:
-        "Providing nutritious meals to families facing food insecurity in rural communities.",
-      start_date: new Date(),
-      end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      category_name: "Food",
-      url: "",
-      creator_name: "Admin",
-      status: "active",
-      admin_notes: "",
-      created_at: new Date(),
-      updated_at: new Date(),
-    },
-    {
-      id: 4,
-      title: "Clean Water Initiative",
-      organization_name: "Water for All",
-      description: "Bringing clean water to remote villages.",
-      start_date: new Date(),
-      end_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-      category_name: "Water",
-      url: "",
-      creator_name: "Admin",
-      status: "active",
-      admin_notes: "",
-      created_at: new Date(),
-      updated_at: new Date(),
-    },
-    {
-      id: 5,
-      title: "Disaster Relief Fund",
-      organization_name: "Relief Now",
-      description: "Immediate support for disaster-affected families.",
-      start_date: new Date(),
-      end_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-      category_name: "Relief",
-      url: "",
-      creator_name: "Admin",
-      status: "active",
-      admin_notes: "",
-      created_at: new Date(),
-      updated_at: new Date(),
-    },
-    {
-      id: 6,
-      title: "Women Empowerment Grants",
-      organization_name: "EmpowerHer",
-      description: "Grants for women entrepreneurs.",
-      start_date: new Date(),
-      end_date: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
-      category_name: "Empowerment",
-      url: "",
-      creator_name: "Admin",
-      status: "active",
-      admin_notes: "",
-      created_at: new Date(),
-      updated_at: new Date(),
-    },
-  ];
-
   // Tabs
-  const [activeTab, setActiveTab] = useState("Search Aid");
-
-  // Handle URL parameters to set active tab
+  const { activeTab, setActiveTab } = useTabsStore();
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && NAV_ITEMS.includes(tab)) {
-      setActiveTab(tab);
-    }
-  }, [searchParams]);
+    if (tab && NAV_ITEMS.includes(tab)) setActiveTab(tab);
+  }, [searchParams, setActiveTab]);
 
-  // Filter states
+  // Filters
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [days, setDays] = useState("");
   const [page, setPage] = useState(1);
 
+  // Favorites
+   const { favorites, addFavorite, removeFavorite } = useFavorite();
+
+  const toggleFavorite = async (announcement: Announcement) => {
+    const isFav = favorites.some((f) => f.id === announcement.id);
+
+    if (isFav) {
+      await removeFavorite(announcement.id);
+    } else {
+      await addFavorite(announcement.id);
+    }
+  };
+
+
+
   // Unique categories
-  const categories = Array.from(
-    new Set(announcements.map((a) => a.category_name))
+  const categories = useMemo(
+    () => Array.from(new Set(announcements.map((a) => a.category_name))),
+    [announcements]
   );
 
   // Filtering
-  const filtered = announcements.filter((a) => {
-    const matchesName =
-      a.title.toLowerCase().includes(search.toLowerCase()) ||
-      a.organization_name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = category ? a.category_name === category : true;
-    const daysLeft = calculateDaysLeft(a.end_date);
-    const matchesDays = days
-      ? days === "expired"
-        ? daysLeft < 0
-        : days === "today"
-        ? daysLeft === 0
-        : days === "7"
-        ? daysLeft <= 7 && daysLeft >= 0
-        : true
-      : true;
-    return matchesName && matchesCategory && matchesDays;
-  });
+  const filtered = useMemo(() => {
+    return announcements.filter((a) => {
+      const matchesName =
+        a.title?.toLowerCase().includes(search.toLowerCase()) ||
+        a.organization_name?.toLowerCase().includes(search.toLowerCase());
+
+      const matchesCategory = category && category !== "all" ? a.category_name === category : true;
+
+      const daysLeft = calculateDaysLeft(a.end_date);
+      const matchesDays = days
+        ? days === "expired"
+          ? daysLeft < 0
+          : days === "today"
+            ? daysLeft === 0
+            : days === "7"
+              ? daysLeft <= 7 && daysLeft >= 0
+              : true
+        : true;
+
+      return matchesName && matchesCategory && matchesDays;
+    });
+  }, [announcements, search, category, days]);
+
+
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -191,10 +101,14 @@ export default function AnnouncementPage() {
     setPage(1);
   }
 
+  if (isLoadingAnnouncements) {
+    return <p className="text-center py-6">Loading announcements...</p>;
+  }
+
   return (
     <section className="py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Welcome Section */}
+        {/* Welcome */}
         <div className="mb-12 text-center">
           <h1 className="text-3xl lg:text-4xl font-bold mb-2">
             Welcome back, <span className="text-primary">{user?.name}</span>
@@ -207,21 +121,15 @@ export default function AnnouncementPage() {
         {/* Tabs */}
         <div className="bg-white rounded-lg shadow p-6">
           <nav className="mb-8">
-            <ul
-              className="
-        grid grid-cols-2 gap-3
-        md:flex md:justify-center md:gap-8
-        bg-[#F4F9FF] rounded-lg py-3 px-2 sm:px-4"
-            >
+            <ul className="grid grid-cols-2 gap-3 md:flex md:justify-center md:gap-8 bg-[#F4F9FF] rounded-lg py-3 px-2 sm:px-4">
               {NAV_ITEMS.map((item) => (
                 <li key={item} className="flex justify-center">
                   <button
                     onClick={() => setActiveTab(item)}
-                    className={`w-full md:w-auto px-4 sm:px-6 py-2 rounded-lg transition  cursor-pointer ${
-                      activeTab === item
-                        ? "border-2 border-primary bg-[#009285]  font-semibold text-white"
+                    className={`w-full md:w-auto px-4 sm:px-6 py-2 rounded-lg transition cursor-pointer ${activeTab === item
+                        ? "border-2 border-primary bg-[#009285] font-semibold text-white"
                         : "text-gray-500 hover:text-black hover:bg-accent/20"
-                    }`}
+                      }`}
                   >
                     {item}
                   </button>
@@ -233,12 +141,7 @@ export default function AnnouncementPage() {
           {/* Tab Content */}
           {activeTab === "Search Aid" && (
             <>
-              <h2 className="text-2xl font-bold mb-1">
-                Search Aid Opportunities
-              </h2>
-              <p className="text-muted-foreground mb-4">
-                Find aid that matches your needs using our advanced filters
-              </p>
+              {/* Filters */}
               <div className="flex flex-col md:flex-row gap-2 mb-6">
                 <Input
                   type="text"
@@ -248,52 +151,48 @@ export default function AnnouncementPage() {
                     handleFilterChange(() => setSearch(e.target.value))
                   }
                 />
-                <select
-                  className="border rounded px-3 py-2"
+                <Select
                   value={category}
-                  onChange={(e) =>
-                    handleFilterChange(() => setCategory(e.target.value))
-                  }
+                  onValueChange={(val) => handleFilterChange(() => setCategory(val))}
                 >
-                  <option value="">All Categories</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className="border rounded px-3 py-2"
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {cat}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+
+                <Select
                   value={days}
-                  onChange={(e) =>
-                    handleFilterChange(() => setDays(e.target.value))
-                  }
+                  onValueChange={(val) => handleFilterChange(() => setDays(val))}
                 >
-                  <option value="">All Deadlines</option>
-                  <option value="today">Today</option>
-                  <option value="7">Next 7 Days</option>
-                  <option value="expired">Expired</option>
-                </select>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="All Deadlines" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Deadlines</SelectItem>
+                    <SelectItem value="today">Today</SelectItem>
+                    <SelectItem value="7">Next 7 Days</SelectItem>
+                    <SelectItem value="expired">Expired</SelectItem>
+                  </SelectContent>
+                </Select>
+
+
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {paginated.length > 0 ? (
-                  paginated.map((announcement) => (
-                    <AnnouncementCard
-                      key={announcement.id}
-                      announcement={announcement}
-                      isFavorite={favorites.some(
-                        (a) => a.id === announcement.id
-                      )}
-                      onToggleFavorite={() => toggleFavorite(announcement)}
-                    />
-                  ))
-                ) : (
-                  <div className="col-span-3 text-center text-muted-foreground py-12">
-                    No announcements found.
-                  </div>
-                )}
-              </div>
+              {/* Announcements List */}
+              <AnnouncementsList
+                announcements={paginated}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+              />
 
               {/* Pagination */}
               <div className="flex justify-center items-center gap-2 mt-8">
@@ -317,10 +216,7 @@ export default function AnnouncementPage() {
           )}
 
           {activeTab === "Favorites" && (
-            <FavoritesSection
-              favorites={favorites}
-              toggleFavorite={toggleFavorite}
-            />
+            <FavoritesSection favorites={favorites} toggleFavorite={toggleFavorite} />
           )}
 
           {activeTab === "Organizations" && <OrganizationSection />}
@@ -331,18 +227,9 @@ export default function AnnouncementPage() {
                 {
                   id: 1,
                   title: "Request Approved",
-                  description:
-                    "Your educational support request has been approved by Future Leaders Institute.",
+                  description: "Your request has been approved.",
                   timeAgo: "2 hours ago",
                   color: "bg-sky-500",
-                },
-                {
-                  id: 2,
-                  title: "New Opportunity Available",
-                  description:
-                    "A new medical aid program matching your profile has been posted.",
-                  timeAgo: "1 day ago",
-                  color: "bg-green-500",
                 },
               ]}
             />

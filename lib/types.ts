@@ -1,4 +1,6 @@
 export interface Announcement {
+  organization: string;
+  category: string;
   id: number;
   title: string;
   description: string;
@@ -12,6 +14,7 @@ export interface Announcement {
   admin_notes: string;
   created_at: Date;
   updated_at: Date;
+  image: string;
 }
 
 export interface User {
