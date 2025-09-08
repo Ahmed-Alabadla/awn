@@ -7,6 +7,8 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import LoginForm from "@/components/shared/LoginForm";
+import Image from "next/image";
+import logo from "@/public/awn.png";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -14,17 +16,28 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <Card className="w-full max-w-md shadow-elegant">
-      <CardHeader className="text-center space-y-2 mt-2">
-        <CardTitle className="text-2xl font-bold block bg-hero-gradient bg-clip-text text-transparent">
-          Login
-        </CardTitle>
-        <CardDescription>
-          Enter your credentials to access your account
-        </CardDescription>
+    <Card className="w-full max-w-md border-0 shadow-2xl shadow-primary/10 backdrop-blur-sm bg-card/95 pt-0">
+      <CardHeader className="relative flex flex-col items-center text-center space-y-6 pt-8 pb-6  rounded-t-xl">
+        <div className="relative">
+          <Image
+            src={logo}
+            alt="Logo"
+            width={96}
+            height={96}
+            className="relative z-10 transition-transform duration-300"
+          />
+        </div>
+        <div className="space-y-2">
+          <CardTitle className="text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent tracking-tight">
+            Welcome Back
+          </CardTitle>
+          <CardDescription className="text-muted-foreground/80 font-medium max-w-xs">
+            Sign in to continue to your account
+          </CardDescription>
+        </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="p-8 pt-4">
         <LoginForm />
       </CardContent>
     </Card>

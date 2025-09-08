@@ -7,6 +7,8 @@ import UserMenu from "./UserMenu";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorite } from "@/hooks/useFavorite";
 import { useTabsStore } from "@/hooks/useTabsStore";
+import Image from "next/image";
+import logo from "@/public/awn.png";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,9 +25,8 @@ export default function Navbar() {
             {/* Logo */}
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center gap-2">
-                <div className="w-8 h-8 bg-hero-gradient rounded-lg flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-white" />
-                </div>
+                <Image src={logo} alt="Logo" width={32} height={32} />
+
                 <span className="text-xl font-bold bg-hero-gradient bg-clip-text text-transparent">
                   Awn
                 </span>
@@ -51,9 +52,7 @@ export default function Navbar() {
           {/* Logo  */}
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-              <div className="w-8 h-8 bg-hero-gradient rounded-lg flex items-center justify-center">
-                <Heart className="w-5 h-5 text-white" />
-              </div>
+              <Image src={logo} alt="Logo" width={40} height={40} />
               <span className="text-xl font-bold bg-hero-gradient bg-clip-text text-transparent">
                 Awn
               </span>

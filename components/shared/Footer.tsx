@@ -1,5 +1,6 @@
-import { Heart } from "lucide-react";
 import Link from "next/link";
+import logo from "@/public/awn.png";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -8,17 +9,17 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-hero-gradient rounded-lg flex items-center justify-center">
-                <Heart className="w-5 h-5 text-white" />
-              </div>
+              <Image src={logo} alt="Logo" width={56} height={56} />
               <span className="text-2xl font-bold bg-hero-gradient bg-clip-text text-transparent">
                 Awn
               </span>
             </div>
             <p className="text-muted-foreground mb-4 max-w-md">
-              Awn helps users easily search and discover announcements. Find the
-              information you need quickly with our powerful search
-              functionality.
+              AWN is an all-inclusive announcement system created specifically
+              to serve the purpose of Gazan individuals, connecting foreign and
+              local organizations to their community through an effective
+              announcement system that ease reaching opportunities
+              more conveniently.
             </p>
           </div>
 
@@ -33,14 +34,7 @@ export default function Footer() {
                   Browse Announcements
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Search
-                </Link>
-              </li>
+
               <li>
                 <Link
                   href="#"

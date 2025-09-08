@@ -83,7 +83,7 @@ export default function OrganizationSection() {
           paginated.map((organization) => (
             <Card
               key={organization.id}
-              className="hover:shadow-lg transition-shadow group"
+              className="hover:shadow-lg transition-shadow group flex flex-col h-full"
             >
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -102,12 +102,12 @@ export default function OrganizationSection() {
                     </CardTitle>
                   </div>
                 </div>
-                <CardDescription className="text-sm">
+                <CardDescription className="text-sm text-foreground leading-relaxed line-clamp-1 overflow-hidden">
                   {organization.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm text-muted-foreground">
+              <CardContent className="flex flex-col flex-1">
+                <div className="space-y-2 text-sm text-muted-foreground flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">Email:</span>
                     <span>{organization.email}</span>

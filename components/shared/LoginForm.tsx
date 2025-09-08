@@ -100,9 +100,9 @@ export default function LoginForm() {
           )}
         </div>
 
-        <Button 
-          type="submit" 
-          className="w-full" 
+        <Button
+          type="submit"
+          className="w-full"
           variant="hero"
           disabled={isLoginPending}
         >
