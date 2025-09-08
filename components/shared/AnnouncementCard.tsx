@@ -68,73 +68,145 @@ export default function AnnouncementCard({
         />
       )}
 
-      <Link
-        href={`/announcements/${announcement.id}`}
-        className="flex flex-col flex-1"
-      >
-        <CardHeader>
-          <div className="flex items-start justify-between ">
-            <Badge variant="outline">{announcement.category_name}</Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.preventDefault(); // stop link click
-                onToggleFavorite();
-              }}
-              className={`shrink-0 transition-colors hover:bg-background ${
-                isFavorite
-                  ? "text-white bg-red-500 hover:bg-red-600"
-                  : "text-gray-400 hover:text-red-500 hover:border-red-500"
-              }`}
-              disabled={!isAuthenticated}
-            >
-              <Heart
-                className="w-5 h-5"
-                fill={isFavorite ? "currentColor" : "none"}
-              />
-            </Button>
-          </div>
-          <CardTitle className="text-xl group-hover:text-primary transition-colors">
-            {announcement.title}
-          </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground font-medium">
-            {announcement.organization_name}
-          </CardDescription>
-        </CardHeader>
+      {isAuthenticated ? (
+        <Link
+          href={`/announcements/${announcement.id}`}
+          className="flex flex-col flex-1"
+        >
+          <CardHeader>
+            <div className="flex items-start justify-between ">
+              <Badge variant="outline">{announcement.category_name}</Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault(); // stop link click
+                  onToggleFavorite();
+                }}
+                className={`shrink-0 transition-colors hover:bg-background ${
+                  isFavorite
+                    ? "text-white bg-red-500 hover:bg-red-600"
+                    : "text-gray-400 hover:text-red-500 hover:border-red-500"
+                }`}
+                disabled={!isAuthenticated}
+              >
+                <Heart
+                  className="w-5 h-5"
+                  fill={isFavorite ? "currentColor" : "none"}
+                />
+              </Button>
+            </div>
+            <CardTitle className="text-xl group-hover:text-primary transition-colors">
+              {announcement.title}
+            </CardTitle>
+            <CardDescription className="text-sm text-muted-foreground font-medium">
+              {announcement.organization_name}
+            </CardDescription>
+          </CardHeader>
 
-        <CardContent className="space-y-4 flex-1">
-          <p className="text-foreground leading-relaxed line-clamp-1 overflow-hidden">
-            {announcement.description}
-          </p>
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="w-4 h-4" />
-            <span
-              className={`font-medium ${
-                isExpired
-                  ? "text-red-600"
-                  : isUrgent
-                  ? "text-orange-600"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {daysLeft}
-            </span>
-          </div>
-        </CardContent>
-      </Link>
+          <CardContent className="space-y-4 flex-1">
+            <p className="text-foreground leading-relaxed line-clamp-1 overflow-hidden">
+              {announcement.description}
+            </p>
+            <div className="flex items-center gap-2 text-sm">
+              <Clock className="w-4 h-4" />
+              <span
+                className={`font-medium ${
+                  isExpired
+                    ? "text-red-600"
+                    : isUrgent
+                    ? "text-orange-600"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {daysLeft}
+              </span>
+            </div>
+          </CardContent>
+        </Link>
+      ) : (
+        <div className="flex flex-col flex-1">
+          <CardHeader>
+            <div className="flex items-start justify-between ">
+              <Badge variant="outline">{announcement.category_name}</Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault(); // stop link click
+                  onToggleFavorite();
+                }}
+                className={`shrink-0 transition-colors hover:bg-background ${
+                  isFavorite
+                    ? "text-white bg-red-500 hover:bg-red-600"
+                    : "text-gray-400 hover:text-red-500 hover:border-red-500"
+                }`}
+                disabled={!isAuthenticated}
+              >
+                <Heart
+                  className="w-5 h-5"
+                  fill={isFavorite ? "currentColor" : "none"}
+                />
+              </Button>
+            </div>
+            <CardTitle className="text-xl">{announcement.title}</CardTitle>
+            <CardDescription className="text-sm text-muted-foreground font-medium">
+              {announcement.organization_name}
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-4 flex-1">
+            <p className="text-foreground leading-relaxed line-clamp-1 overflow-hidden">
+              {announcement.description}
+            </p>
+            <div className="flex items-center gap-2 text-sm">
+              <Clock className="w-4 h-4" />
+              <span
+                className={`font-medium ${
+                  isExpired
+                    ? "text-red-600"
+                    : isUrgent
+                    ? "text-orange-600"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {daysLeft}
+              </span>
+            </div>
+          </CardContent>
+        </div>
+      )}
 
       <CardFooter className="flex gap-2 mt-auto">
         <Button asChild variant="hero" className="flex-1 group">
-          <a href={announcement.url} target="_blank" rel="noopener noreferrer">
-            Apply Now
-          </a>
+          {isAuthenticated ? (
+            <Link
+              href={announcement.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Apply Now
+            </Link>
+          ) : (
+            <Link href="/login">Apply Now</Link>
+          )}
         </Button>
         {/* Arrow button also links to detail */}
-        <Button asChild variant="outline" size="icon">
-          <Link href={`/announcements/${announcement.id}`}>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+        <Button
+          asChild
+          variant="outline"
+          size="icon"
+          disabled={!isAuthenticated}
+        >
+          {isAuthenticated ? (
+            <Link href={`/announcements/${announcement.id}`}>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            <div>
+              <ArrowRight className="w-4 h-4" />
+            </div>
+          )}
         </Button>
       </CardFooter>
     </Card>

@@ -8,7 +8,7 @@ export default function HeroSection() {
   return (
     <section
       id="home"
-      className="relative overflow-hidden bg-subtle-gradient py-20 lg:py-24"
+      className="relative overflow-hidden bg-subtle-gradient py-9"
     >
       {/* <div className="fixed inset-0 bg-hero-gradient opacity-5 pointer-events-none"></div> */}
 
@@ -23,7 +23,7 @@ export default function HeroSection() {
                   Support & Opportunities
                 </span>
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <p className="text-lg text-muted-foreground leading-relaxed">
                 Connect directly with organizations to access aid applications
                 and job opportunities. Our platform centralizes all organization
                 links, making it easier for Gaza residents to find and apply for
