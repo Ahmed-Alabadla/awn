@@ -1,21 +1,23 @@
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
 }
 
-export default function LoadingSpinner({ 
-  size = 'md', 
-  className = '' 
+export default function LoadingSpinner({
+  size = "md",
+  className = "",
 }: LoadingSpinnerProps) {
   const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-8 w-8',
-    lg: 'h-12 w-12'
+    sm: "h-6 w-6",
+    md: "h-10 w-10",
+    lg: "h-16 w-16",
   };
 
   return (
-    <div className={`flex items-center justify-center min-h-screen ${className}`}>
-      <div 
+    <div
+      className={`flex items-center justify-center min-h-screen ${className}`}
+    >
+      <div
         className={`animate-spin rounded-full border-b-2 border-primary ${sizeClasses[size]}`}
         role="status"
         aria-label="Loading"
