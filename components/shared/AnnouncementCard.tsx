@@ -218,8 +218,7 @@ export default function AnnouncementCard({
               </DialogHeader>
 
               <ProxyIframe
-                // url={announcement.url}
-                url="https://pal.beneficiaryregistration.cbt.wfp.org/form/consent"
+                url={announcement.url}
                 title={`Application form for ${announcement.title}`}
                 announcementId={announcement.id}
                 sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"

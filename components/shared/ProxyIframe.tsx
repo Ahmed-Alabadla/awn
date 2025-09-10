@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import LoadingSpinner from "@/components/ui/loading-spinner";
@@ -24,118 +24,56 @@ interface ProxyIframeProps {
 
 export default function ProxyIframe({
   url,
+  title = "External Content",
   className = "",
   height = "60vh",
+  allowFullscreen = false,
+  sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads",
   onError,
   onLoad,
   showExternalLink = true,
+  showRefresh = true,
   announcementId,
 }: ProxyIframeProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [popupWindow, setPopupWindow] = useState<Window | null>(null);
-  const popupRef = useRef<Window | null>(null);
+  const [key, setKey] = useState(0); // Force iframe reload
 
-  const { getProxyUrl, validateUrl, error, handleError, clearError } =
-    useProxyUrl({
-      onError: (errorMsg) => {
-        setHasError(true);
-        onError?.(errorMsg);
-      },
-    });
-
-  const proxyUrl = getProxyUrl(url);
+  const { validateUrl, error, handleError, clearError } = useProxyUrl({
+    onError: (errorMsg) => {
+      setHasError(true);
+      onError?.(errorMsg);
+    },
+  });
 
   useEffect(() => {
     if (!validateUrl(url)) {
       handleError("Invalid URL provided");
       setHasError(true);
+      setIsLoading(false);
     } else {
       clearError();
       setHasError(false);
     }
   }, [url, validateUrl, handleError, clearError]);
 
-  // Cleanup popup window on component unmount
-  useEffect(() => {
-    return () => {
-      if (popupRef.current && !popupRef.current.closed) {
-        popupRef.current.close();
-      }
-    };
-  }, []);
-
-  const openPopupWindow = () => {
-    try {
-      setIsLoading(true);
-      setHasError(false);
-      clearError();
-
-      // Close existing popup if open
-      if (popupRef.current && !popupRef.current.closed) {
-        popupRef.current.close();
-      }
-
-      // Calculate popup dimensions and position
-      const width = Math.min(1200, window.screen.width * 0.8);
-      const height = Math.min(800, window.screen.height * 0.8);
-      const left = (window.screen.width - width) / 2;
-      const top = (window.screen.height - height) / 2;
-
-      const popup = window.open(
-        url,
-        `application_${announcementId}`,
-        `width=${width},height=${height},left=${left},top=${top},` +
-          `scrollbars=yes,resizable=yes,status=yes,toolbar=no,menubar=no,location=no`
-      );
-
-      if (!popup) {
-        handleError("Popup blocked. Please allow popups for this site.");
-        setHasError(true);
-        setIsLoading(false);
-        return;
-      }
-
-      popupRef.current = popup;
-      setPopupWindow(popup);
-
-      // Monitor popup status
-      const checkClosed = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkClosed);
-          setPopupWindow(null);
-          setIsLoading(false);
-          onLoad?.();
-        }
-      }, 1000);
-
-      // Handle popup load event
-      popup.addEventListener("load", () => {
-        setIsLoading(false);
-        onLoad?.();
-      });
-
-      popup.addEventListener("error", () => {
-        setIsLoading(false);
-        setHasError(true);
-        handleError("Failed to load content in popup window");
-      });
-    } catch (error) {
-      setIsLoading(false);
-      setHasError(true);
-      handleError(
-        `Error opening popup: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-    }
+  const handleIframeLoad = () => {
+    setIsLoading(false);
+    setHasError(false);
+    onLoad?.();
   };
 
-  const closePopupWindow = () => {
-    if (popupRef.current && !popupRef.current.closed) {
-      popupRef.current.close();
-      setPopupWindow(null);
-    }
+  const handleIframeError = () => {
+    setIsLoading(false);
+    setHasError(true);
+    handleError("Failed to load content");
+  };
+
+  const handleRefresh = () => {
+    setIsLoading(true);
+    setHasError(false);
+    clearError();
+    setKey((prev) => prev + 1); // Force iframe reload
   };
 
   if (!url || !validateUrl(url)) {
@@ -151,75 +89,72 @@ export default function ProxyIframe({
 
   return (
     <div className={`relative ${className}`}>
+      {/* Controls */}
+      <div className="flex items-center justify-end mb-2 gap-2">
+        <div className="flex items-center gap-1 shrink-0">
+          {showRefresh && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              className="h-8 w-8 p-0"
+              title="Refresh content"
+            >
+              <RefreshCw className="h-3 w-3" />
+            </Button>
+          )}
+          {showExternalLink && (
+            <Button
+              variant="outline"
+              size="sm"
+              title="Open in new tab"
+              className="h-8 w-8 p-0"
+              asChild
+            >
+              <Link
+                href={`/announcements/${announcementId}/apply`}
+                target="_blank"
+                title="Open in new tab"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            </Button>
+          )}
+        </div>
+      </div>
+
       {/* Content container */}
-      <div
-        className="relative flex flex-col items-center justify-center border rounded-md bg-muted/30 p-8"
-        style={{ height }}
-      >
-        {/* Loading state */}
-        {isLoading && (
-          <div className="flex flex-col items-center gap-4">
-            <LoadingSpinner size="lg" />
-            <div className="text-center">
-              <h3 className="font-medium mb-2">Opening Application Form</h3>
+      <div className="relative " style={{ height }}>
+        {/* Loading state - overlay */}
+        {isLoading && !hasError && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center border rounded-md bg-background/80 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-2">
+              <LoadingSpinner size="lg" />
               <p className="text-sm text-muted-foreground">
-                A new window is opening with the application form...
+                Loading content...
               </p>
             </div>
-            <Button variant="outline" size="sm" onClick={closePopupWindow}>
-              Cancel
-            </Button>
           </div>
         )}
 
         {/* Error state */}
         {hasError && (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <AlertTriangle className="h-12 w-12 text-muted-foreground" />
-            <div className="space-y-2">
-              <h3 className="font-medium">Unable to open application form</h3>
-              <p className="text-sm text-muted-foreground">
-                {error ||
-                  "The application form could not be opened. Please make sure popups are enabled."}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={openPopupWindow}>
-                <RefreshCw className="h-3 w-3 mr-1" />
-                Try Again
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link href={url} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-3 w-3 mr-1" />
-                  Open Original
-                </Link>
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Default state - show open button */}
-        {!isLoading && !hasError && !popupWindow && (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <ExternalLink className="h-8 w-8 text-primary" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-medium">Ready to apply</h3>
-              <p className="text-sm text-muted-foreground">
-                Click below to open the application form in a new window
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="default"
-                onClick={openPopupWindow}
-                className="px-6"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Open Application Form
-              </Button>
-              {showExternalLink && (
+          <div className="absolute inset-0 flex items-center justify-center border rounded-md bg-muted/30">
+            <div className="flex flex-col items-center gap-4 p-6 text-center">
+              <AlertTriangle className="h-12 w-12 text-muted-foreground" />
+              <div className="space-y-2">
+                <h3 className="font-medium">Unable to load content</h3>
+                <p className="text-sm text-muted-foreground">
+                  {error ||
+                    "The content could not be loaded. This might be due to security restrictions or the site being unavailable."}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={handleRefresh}>
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Try Again
+                </Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link
                     href={`/announcements/${announcementId}/apply`}
@@ -227,40 +162,27 @@ export default function ProxyIframe({
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="h-3 w-3 mr-1" />
-                    Direct Link
+                    Open Original
                   </Link>
                 </Button>
-              )}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Popup is open state */}
-        {popupWindow && !popupWindow.closed && (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-              <ExternalLink className="h-8 w-8 text-green-600" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-medium">Application form is open</h3>
-              <p className="text-sm text-muted-foreground">
-                The application form is now open in a separate window. Complete
-                your application there.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => popupWindow.focus()}
-              >
-                Focus Window
-              </Button>
-              <Button variant="outline" size="sm" onClick={closePopupWindow}>
-                Close Window
-              </Button>
-            </div>
-          </div>
+        {/* Iframe - always rendered when no error */}
+        {!hasError && (
+          <iframe
+            key={key}
+            src={url}
+            title={title}
+            className="w-full h-full border-0 rounded-md transition-opacity duration-200"
+            onLoad={handleIframeLoad}
+            onError={handleIframeError}
+            sandbox={sandbox}
+            allowFullScreen={allowFullscreen}
+            loading="lazy"
+          />
         )}
       </div>
     </div>
