@@ -5,6 +5,14 @@ import { useAnnouncementById } from "@/hooks/useAnnouncement";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Loader2,
   ArrowLeft,
   Heart,
@@ -18,6 +26,8 @@ import Image from "next/image";
 import { useFavorite } from "@/hooks/useFavorite";
 import { useState } from "react";
 import { toast } from "sonner";
+import ProxyIframe from "@/components/shared/ProxyIframe";
+import ApplicationTrackingDialog from "@/components/shared/ApplicationTrackingDialog";
 
 export default function AnnouncementDetailPage() {
   const { id } = useParams(); // from route /announcements/[id]
@@ -30,6 +40,8 @@ export default function AnnouncementDetailPage() {
   const [isFav, setIsFav] = useState(
     favorites.some((f) => f.id === announcementId)
   );
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isTrackingDialogOpen, setIsTrackingDialogOpen] = useState(false);
 
   if (isLoadingAnnouncement) {
     return (
@@ -236,26 +248,59 @@ export default function AnnouncementDetailPage() {
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row gap-3">
             {!isExpired && announcement.url ? (
-              <Button asChild className="flex-1" variant="hero">
-                <Link
-                  href={announcement.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Apply Now
-                </Link>
-              </Button>
+              <Dialog
+                open={isDialogOpen}
+                onOpenChange={(open) => {
+                  setIsDialogOpen(open);
+                  // When apply dialog closes, open tracking dialog
+                  if (!open) {
+                    setTimeout(() => setIsTrackingDialogOpen(true), 300);
+                  }
+                }}
+              >
+                <DialogTrigger asChild>
+                  <Button className="flex-1" variant="hero">
+                    Apply Now
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[95vw] md:max-w-5xl p-2 md:p-6">
+                  <DialogHeader className="pb-2 md:pb-4">
+                    <DialogTitle className="text-base md:text-lg line-clamp-2">
+                      Apply for: {announcement.title}
+                    </DialogTitle>
+                    <DialogDescription className="text-xs md:text-sm">
+                      Complete your application for this announcement from{" "}
+                      {announcement.organization_name}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <ProxyIframe
+                    url={announcement.url}
+                    title={`Application form for ${announcement.title}`}
+                    announcementId={announcement.id}
+                    sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"
+                    className="flex-1 min-h-[50vh] md:min-h-[60vh]"
+                  />
+                </DialogContent>
+              </Dialog>
             ) : (
               <Button disabled className="flex-1" variant="hero">
                 Application Closed
               </Button>
             )}
-            <Button variant="outline" className="flex-1">
+            {/* <Button variant="outline" className="flex-1">
               Contact Organization
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
+
+      <ApplicationTrackingDialog
+        open={isTrackingDialogOpen}
+        onOpenChange={setIsTrackingDialogOpen}
+        announcementId={announcement.id}
+        announcementTitle={announcement.title}
+      />
     </div>
   );
 }

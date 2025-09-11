@@ -6,13 +6,43 @@ import { ArrowLeft } from "lucide-react";
 import { useAnnouncementById } from "@/hooks/useAnnouncement";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import ProxyIframe from "@/components/shared/ProxyIframe";
+import ApplicationTrackingDialog from "@/components/shared/ApplicationTrackingDialog";
+import { useState, useEffect } from "react";
 
 export default function AnnouncementApplyPage() {
   const params = useParams();
   const router = useRouter();
+  const [isTrackingDialogOpen, setIsTrackingDialogOpen] = useState(false);
 
   const { announcement, isLoadingAnnouncement, errorAnnouncement } =
     useAnnouncementById(Number(params.id));
+
+  // Show tracking dialog after 30 seconds or when user navigates away
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsTrackingDialogOpen(true);
+    }, 30000); // 30 seconds
+
+    // Cleanup timer on unmount
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Also show tracking dialog when user navigates away
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Show tracking dialog before page unload
+      setIsTrackingDialogOpen(true);
+      // Prevent immediate navigation to show dialog
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   if (isLoadingAnnouncement) {
     return (
@@ -59,6 +89,13 @@ export default function AnnouncementApplyPage() {
               </p>
             </div>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsTrackingDialogOpen(true)}
+          >
+            Track Application
+          </Button>
         </div>
       </div>
 
@@ -80,6 +117,13 @@ export default function AnnouncementApplyPage() {
           />
         </div>
       </div>
+      
+      <ApplicationTrackingDialog
+        open={isTrackingDialogOpen}
+        onOpenChange={setIsTrackingDialogOpen}
+        announcementId={Number(params.id)}
+        announcementTitle={announcement.title}
+      />
     </div>
   );
 }

@@ -56,6 +56,16 @@ export interface Organization {
   updated_at: Date;
 }
 
+export interface ApplicationTracker {
+  id: number;
+  announcement: Announcement;
+  status: "applied" | "not applied";
+  notes?: string;
+  reminder_date?: Date | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
 export interface ApiError {
   response?: {
     status?: number;

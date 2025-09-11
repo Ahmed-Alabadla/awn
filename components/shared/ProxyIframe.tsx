@@ -113,7 +113,7 @@ export default function ProxyIframe({
             >
               <Link
                 href={`/announcements/${announcementId}/apply`}
-                target="_blank"
+                // target="_blank"
                 title="Open in new tab"
                 rel="noopener noreferrer"
               >

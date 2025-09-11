@@ -187,3 +187,13 @@ export const reportSchema = z
     }
   );
 export type ReportFormValues = z.infer<typeof reportSchema>;
+
+// Application Tracking schema
+export const applicationTrackingSchema = z.object({
+  status: z.enum(["applied", "not applied"], { message: "Status is required" }),
+  notes: z.string().optional(),
+  reminder_date: z.string().optional(),
+});
+export type ApplicationTrackingValues = z.infer<
+  typeof applicationTrackingSchema
+>;

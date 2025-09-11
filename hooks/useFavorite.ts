@@ -2,9 +2,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { favoriteService } from "@/services/favorite.service";
 import { Announcement } from "@/lib/types";
 import { toast } from "sonner";
+import { useAuth } from "./useAuth";
 
 export const useFavorite = () => {
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
 
   const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery<
     Announcement[]
@@ -12,6 +14,7 @@ export const useFavorite = () => {
     queryKey: ["favorites"],
     queryFn: favoriteService.getFavorites,
     refetchOnWindowFocus: false,
+    enabled: !!isAuthenticated,
   });
 
   // useFavorite.ts

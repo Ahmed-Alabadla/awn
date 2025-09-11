@@ -25,6 +25,7 @@ import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import ProxyIframe from "./ProxyIframe";
+import ApplicationTrackingDialog from "./ApplicationTrackingDialog";
 
 export default function AnnouncementCard({
   announcement,
@@ -36,6 +37,7 @@ export default function AnnouncementCard({
   onToggleFavorite: () => void;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isTrackingDialogOpen, setIsTrackingDialogOpen] = useState(false);
 
   const calculateDaysLeft = (endDate: string): string => {
     const today = new Date();
@@ -197,35 +199,54 @@ export default function AnnouncementCard({
 
       <CardFooter className="flex flex-row gap-2 mt-auto !py-0 p-3 md:p-6">
         {isAuthenticated ? (
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="hero"
-                className="group text-sm md:text-base flex-1"
-              >
-                Apply Now
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[95vw] md:max-w-5xl p-2 md:p-6">
-              <DialogHeader className="pb-2 md:pb-4">
-                <DialogTitle className="text-base md:text-lg line-clamp-2">
-                  Apply for: {announcement.title}
-                </DialogTitle>
-                <DialogDescription className="text-xs md:text-sm">
-                  Complete your application for this announcement from{" "}
-                  {announcement.organization_name}
-                </DialogDescription>
-              </DialogHeader>
+          <>
+            <Dialog
+              open={isDialogOpen}
+              onOpenChange={(open) => {
+                setIsDialogOpen(open);
+                // When apply dialog closes, open tracking dialog
+                if (!open) {
+                  setTimeout(() => setIsTrackingDialogOpen(true), 300);
+                }
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button
+                  variant="hero"
+                  className="group text-sm md:text-base flex-1"
+                  disabled={isExpired}
+                >
+                  {isExpired ? "Application Closed" : "Apply Now"}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[95vw] md:max-w-5xl p-2 md:p-6">
+                <DialogHeader className="pb-2 md:pb-4">
+                  <DialogTitle className="text-base md:text-lg line-clamp-2">
+                    Apply for: {announcement.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-xs md:text-sm">
+                    Complete your application for this announcement from{" "}
+                    {announcement.organization_name}
+                  </DialogDescription>
+                </DialogHeader>
 
-              <ProxyIframe
-                url={announcement.url}
-                title={`Application form for ${announcement.title}`}
-                announcementId={announcement.id}
-                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"
-                className="flex-1 min-h-[50vh] md:min-h-[60vh]"
-              />
-            </DialogContent>
-          </Dialog>
+                <ProxyIframe
+                  url={announcement.url}
+                  title={`Application form for ${announcement.title}`}
+                  announcementId={announcement.id}
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"
+                  className="flex-1 min-h-[50vh] md:min-h-[60vh]"
+                />
+              </DialogContent>
+            </Dialog>
+
+            <ApplicationTrackingDialog
+              open={isTrackingDialogOpen}
+              onOpenChange={setIsTrackingDialogOpen}
+              announcementId={announcement.id}
+              announcementTitle={announcement.title}
+            />
+          </>
         ) : (
           <Button
             asChild
