@@ -66,6 +66,14 @@ export interface ApplicationTracker {
   updated_at: Date;
 }
 
+export interface Notifications {
+  id: number;
+  title: string;
+  message: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 export interface ApiError {
   response?: {
     status?: number;

@@ -30,22 +30,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useReport } from "@/hooks/useReport";
-import { useOrganizations } from "@/hooks/useOrganization";
 
 export default function ReportsSection() {
-  const { organizations, isLoadingOrganizations } = useOrganizations();
-
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
       title: "",
       description: "",
-      target_org: "",
       type: "system",
     },
   });
-
-  const watchedType = form.watch("type");
 
   const { generateReport, isGeneratingReport } = useReport();
 
@@ -96,9 +90,7 @@ export default function ReportsSection() {
                             <SelectItem value="system">
                               Report a Bug in the Application
                             </SelectItem>
-                            <SelectItem value="organization">
-                              Report a Problem with an Organization
-                            </SelectItem>
+
                             <SelectItem value="other">Other</SelectItem>
                           </SelectGroup>
                         </SelectContent>
@@ -109,45 +101,7 @@ export default function ReportsSection() {
                   </FormItem>
                 )}
               />
-              {watchedType === "organization" && (
-                <FormField
-                  control={form.control}
-                  name="target_org"
-                  render={({ field }) => (
-                    <FormItem className="animate-fade-in">
-                      <FormLabel>Organization</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={
-                            isLoadingOrganizations ||
-                            organizations?.length === 0 ||
-                            isGeneratingReport
-                          }
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select an organization" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              {organizations?.map((org) => (
-                                <SelectItem
-                                  key={org.id}
-                                  value={org.id.toString()}
-                                >
-                                  {org.organization_name}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+
               <FormField
                 control={form.control}
                 name="title"

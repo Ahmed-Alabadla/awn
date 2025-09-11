@@ -1,11 +1,12 @@
 "use client";
-import { Heart, Menu, X } from "lucide-react";
+import { Heart, Menu, X, Bell } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorite } from "@/hooks/useFavorite";
+import { useNotification } from "@/hooks/useNotification";
 import { useTabsStore } from "@/hooks/useTabsStore";
 import Image from "next/image";
 import logo from "@/public/awn.png";
@@ -13,6 +14,7 @@ import logo from "@/public/awn.png";
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { favorites } = useFavorite();
+  const { notifications } = useNotification();
   const { setActiveTab } = useTabsStore();
 
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -32,14 +34,14 @@ export default function Navbar() {
                 </span>
               </Link>
             </div>
-            
+
             {/* Navigation Links placeholder */}
             <div className="hidden md:flex items-center space-x-4">
               <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
               <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
               <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
             </div>
-            
+
             {/* Loading placeholder */}
             <div className="flex items-center space-x-4">
               <div className="hidden md:flex items-center space-x-2">
@@ -113,6 +115,24 @@ export default function Navbar() {
             {isAuthenticated ? (
               /* Authenticated: Notifications, Favorites, UserMenu */
               <>
+                {/* Notifications */}
+                {user?.role === "user" && (
+                  <Link
+                    href="/"
+                    className="relative"
+                    onClick={() => setActiveTab("Notifications")}
+                  >
+                    <Button variant="ghost" size="icon">
+                      <Bell className="w-5 h-5" />
+                    </Button>
+                    {notifications && notifications.length > 0 && (
+                      <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {notifications.length}
+                      </span>
+                    )}
+                  </Link>
+                )}
+
                 {/* Favorites */}
                 {user?.role === "user" && (
                   <Link

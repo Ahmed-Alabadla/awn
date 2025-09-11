@@ -45,8 +45,6 @@ api.interceptors.response.use(
 
           const { access, refresh } = response.data;
 
-          console.log("refreshed tokens", { access, refresh });
-
           // Update access token in cookies
           setCookie("access_token", access, {
             maxAge: 60 * 60, // 1 hour for access token

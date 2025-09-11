@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { useTabsStore } from "@/hooks/useTabsStore";
 import ApplicationsSection from "./ApplicationsSection";
+import NotificationSection from "./NotificationSection";
 
 const PAGE_SIZE = 6;
 const NAV_ITEMS = [
@@ -31,7 +32,7 @@ const NAV_ITEMS = [
   "Favorites",
   "Applications",
   "Organizations",
-  // "Notifications",
+  "Notifications",
   "Reports",
 ];
 
@@ -235,19 +236,9 @@ export default function AnnouncementPage() {
               <OrganizationSection />
             </TabsContent>
 
-            {/* <TabsContent value="Notifications" className="mt-8">
-              <NotificationSection
-                notifications={[
-                  {
-                    id: 1,
-                    title: "Request Approved",
-                    description: "Your request has been approved.",
-                    timeAgo: "2 hours ago",
-                    color: "bg-sky-500",
-                  },
-                ]}
-              />
-            </TabsContent> */}
+            <TabsContent value="Notifications" className="mt-8">
+              <NotificationSection />
+            </TabsContent>
 
             <TabsContent value="Reports" className="mt-8">
               <ReportsSection />

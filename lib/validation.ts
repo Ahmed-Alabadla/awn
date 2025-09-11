@@ -161,31 +161,17 @@ export const changePasswordSchema = z
 export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
 
 // Report Form schema
-export const reportSchema = z
-  .object({
-    type: z.enum(["system", "organization", "other"]),
-    target_org: z.string().optional(),
-    title: z
-      .string()
-      .min(2, "Title must be at least 2 characters")
-      .max(100, "Title must be at most 100 characters"),
-    description: z
-      .string()
-      .min(10, "Description must be at least 10 characters")
-      .max(1000, "Description must be at most 1000 characters"),
-  })
-  .refine(
-    (data) => {
-      if (data.type === "organization") {
-        return data.target_org && data.target_org.trim() !== "";
-      }
-      return true;
-    },
-    {
-      message: "Please select an organization to report",
-      path: ["target_org"],
-    }
-  );
+export const reportSchema = z.object({
+  type: z.enum(["system", "other"]),
+  title: z
+    .string()
+    .min(2, "Title must be at least 2 characters")
+    .max(100, "Title must be at most 100 characters"),
+  description: z
+    .string()
+    .min(10, "Description must be at least 10 characters")
+    .max(1000, "Description must be at most 1000 characters"),
+});
 export type ReportFormValues = z.infer<typeof reportSchema>;
 
 // Application Tracking schema
