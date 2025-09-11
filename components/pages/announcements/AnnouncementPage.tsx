@@ -25,6 +25,10 @@ import {
 import { useTabsStore } from "@/hooks/useTabsStore";
 import ApplicationsSection from "./ApplicationsSection";
 import NotificationSection from "./NotificationSection";
+import { Card, CardContent } from "@/components/ui/card";
+import { Bell, FileText, Heart } from "lucide-react";
+import { useApplicationTracker } from "@/hooks/useApplicationTracker";
+import { useNotification } from "@/hooks/useNotification";
 
 const PAGE_SIZE = 6;
 const NAV_ITEMS = [
@@ -59,7 +63,14 @@ export default function AnnouncementPage() {
   const [page, setPage] = useState(1);
 
   // Favorites
-  const { favorites, addFavorite, removeFavorite } = useFavorite();
+  const { favorites, addFavorite, removeFavorite, isLoadingFavorites } =
+    useFavorite();
+
+  // Trackers
+  const { isLoadingTrackers, trackers } = useApplicationTracker();
+
+  // Notifications
+  const { notifications, isLoadingNotifications } = useNotification();
 
   const toggleFavorite = async (announcement: Announcement) => {
     const isFav = favorites.some((f) => f.id === announcement.id);
@@ -122,6 +133,53 @@ export default function AnnouncementPage() {
           <p className="text-lg text-muted-foreground">
             Manage your aid requests and explore new opportunities
           </p>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="py-0">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Active Applications
+                  </p>
+                  <p className="text-2xl font-bold text-primary">
+                    {isLoadingTrackers ? "..." : trackers?.length}
+                  </p>
+                </div>
+                <FileText className="w-8 h-8 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="py-0">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Favorites</p>
+                  <p className="text-2xl font-bold text-accent">
+                    {isLoadingFavorites ? "..." : favorites.length}
+                  </p>
+                </div>
+                <Heart className="w-8 h-8 text-accent" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="py-0">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Notifications</p>
+                  <p className="text-2xl font-bold text-destructive">
+                    {isLoadingNotifications ? "..." : notifications?.length}
+                  </p>
+                </div>
+                <Bell className="w-8 h-8 text-destructive" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Tabs */}
