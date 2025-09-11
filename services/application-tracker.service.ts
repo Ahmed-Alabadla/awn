@@ -18,4 +18,8 @@ export const applicationTrackerService = {
     const response = await api.get("/awn/api/announcements/my-applications/");
     return response.data.data;
   },
+
+  deleteTracker: async (trackerId: number): Promise<void> => {
+    await api.delete(`/awn/api/announcements/${trackerId}/track-application/`);
+  },
 };

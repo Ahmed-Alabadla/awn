@@ -24,14 +24,22 @@ export default function Navbar() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center gap-2">
-                <Image src={logo} alt="Logo" width={32} height={32} />
+              <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+                <Image src={logo} alt="Logo" width={40} height={40} />
 
                 <span className="text-xl font-bold bg-hero-gradient bg-clip-text text-transparent">
                   Awn
                 </span>
-              </div>
+              </Link>
             </div>
+            
+            {/* Navigation Links placeholder */}
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            
             {/* Loading placeholder */}
             <div className="flex items-center space-x-4">
               <div className="hidden md:flex items-center space-x-2">

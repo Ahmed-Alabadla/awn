@@ -34,13 +34,13 @@ export default function AnnouncementApplyPage() {
       setIsTrackingDialogOpen(true);
       // Prevent immediate navigation to show dialog
       e.preventDefault();
-      e.returnValue = '';
+      e.returnValue = "";
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -70,7 +70,7 @@ export default function AnnouncementApplyPage() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <div className="bg-background border-b p-4">
-        <div className="container mx-auto flex items-center justify-between">
+        <div className="container mx-auto flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
@@ -117,7 +117,7 @@ export default function AnnouncementApplyPage() {
           />
         </div>
       </div>
-      
+
       <ApplicationTrackingDialog
         open={isTrackingDialogOpen}
         onOpenChange={setIsTrackingDialogOpen}

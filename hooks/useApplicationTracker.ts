@@ -68,6 +68,31 @@ export const useApplicationTracker = (announcementId?: number) => {
     },
   });
 
+  // Delete tracker
+  const deleteTracker = useMutation({
+    mutationKey: ["deleteTracker"],
+    mutationFn: async (trackerId: number) =>
+      applicationTrackerService.deleteTracker(trackerId),
+    onSuccess: () => {
+      toast.success("Application tracker deleted successfully");
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({
+        queryKey: ["ApplicationTrackers"],
+      });
+    },
+    onError: (error: ApiError) => {
+      console.log("Error deleting application tracker:", error);
+      const errorStatusText = error?.response?.statusText || "Unknown error";
+      const errorMessage =
+        error?.response?.data?.detail ||
+        error?.response?.data?.message ||
+        "Failed to delete application tracker. Please try again.";
+      toast.error(errorStatusText, {
+        description: errorMessage,
+      });
+    },
+  });
+
   return {
     trackers,
     isLoadingTrackers,
@@ -76,5 +101,8 @@ export const useApplicationTracker = (announcementId?: number) => {
     currentTracker,
     createOrUpdateTracker: createOrUpdateTracker.mutate,
     isUpdatingTracker: createOrUpdateTracker.isPending,
+
+    deleteTracker: deleteTracker.mutate,
+    isDeletingTracker: deleteTracker.isPending,
   };
 };

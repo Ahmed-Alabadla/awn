@@ -23,11 +23,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTabsStore } from "@/hooks/useTabsStore";
+import ApplicationsSection from "./ApplicationsSection";
 
 const PAGE_SIZE = 6;
 const NAV_ITEMS = [
   "Search Aid",
   "Favorites",
+  "Applications",
   "Organizations",
   // "Notifications",
   "Reports",
@@ -223,6 +225,10 @@ export default function AnnouncementPage() {
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
               />
+            </TabsContent>
+
+            <TabsContent value="Applications" className="mt-8">
+              <ApplicationsSection />
             </TabsContent>
 
             <TabsContent value="Organizations" className="mt-8">

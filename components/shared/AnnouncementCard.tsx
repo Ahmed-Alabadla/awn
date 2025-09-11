@@ -219,7 +219,7 @@ export default function AnnouncementCard({
                   {isExpired ? "Application Closed" : "Apply Now"}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[95vw] md:max-w-5xl p-2 md:p-6">
+              <DialogContent className="max-w-[95vw] md:max-w-5xl p-4 md:p-6">
                 <DialogHeader className="pb-2 md:pb-4">
                   <DialogTitle className="text-base md:text-lg line-clamp-2">
                     Apply for: {announcement.title}

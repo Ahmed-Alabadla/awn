@@ -105,7 +105,7 @@ export default function ApplicationTrackingDialog({
   return (
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent
-        className="max-w-md"
+        className="max-w-[95vw] md:max-w-5xl p-4 md:p-6"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
         showCloseButton={false}
