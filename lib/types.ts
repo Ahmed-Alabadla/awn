@@ -46,7 +46,7 @@ export interface Organization {
   organization_name: string;
   profile_image: string | null;
   description: string;
-  website?: string;
+  website: string ;
   location?: string;
   verified: boolean;
   is_active: boolean;
