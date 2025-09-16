@@ -26,7 +26,7 @@ interface DataTableProps<T> {
 export default function DataTable<T>({
     columns,
     data = [], // default to empty array
-    rowsPerPage = 6,
+    rowsPerPage = 10,
 }: DataTableProps<T>) {
     const [page, setPage] = useState(0);
 

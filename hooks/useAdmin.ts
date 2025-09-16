@@ -20,22 +20,16 @@ export const useOrganizationsAdmin = () => {
 };
 
 
-export const useApprovedAnnouncementsAdmin = () => {
-    const { data, isLoading } = useQuery<Announcement[] | null>({
+export const useAllAnnouncementsAdmin = () => {
+    const { data: Announcement, isLoading } = useQuery<Announcement[] | null>({
         queryKey: ["announcements-admin"],
-        queryFn: () => adminService.getAnnouncementsApproved(),
+        queryFn: () => adminService.getAllAnnouncements(),
         refetchOnWindowFocus: false,
     });
 
-    // Ensure data is always an array before filtering
-    const announcementsArray: Announcement[] = Array.isArray(data) ? data : [];
-
-    const announcementsApproved = announcementsArray.filter(
-        (ann) => ann.status === "approved"
-    );
-
+   
     return {
-        announcementsApproved,
+        Announcement,
         isLoadingAnnouncements: isLoading,
     };
 };

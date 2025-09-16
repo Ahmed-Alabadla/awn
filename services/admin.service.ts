@@ -9,7 +9,7 @@ export const adminService = {
         return response.data;
     },
 
-    getAnnouncementsApproved: async (): Promise<Announcement[]> => { 
+    getAllAnnouncements: async (): Promise<Announcement[]> => { 
         const response = await api.get("/awn/api/announcements");
         return response.data.data;
     },

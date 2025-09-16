@@ -15,8 +15,7 @@ export interface Announcement {
   category_name: string;
   organization_name: string;
   creator_name: string;
-  status?: "approved" | "pending";
-  admin_notes: string;
+  status?: "pending" | "approved" | "rejected";  admin_notes: string;
   created_at: Date;
   updated_at: Date;
   image: string;

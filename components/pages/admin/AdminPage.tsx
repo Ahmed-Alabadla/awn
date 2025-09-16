@@ -5,39 +5,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Users, Building2, FileText, AlertTriangle } from "lucide-react";
 
-// Import feature tables
 import OrganizationTable from "./OrganizationTable";
 import UsersTable from "./UsersTable";
 import AnnouncementsTable from "./AnnouncementsTable";
 import ReportsTable from "./ReportsTable";
 
-// Import your hooks
-import { useApprovedAnnouncementsAdmin, useOrganizationsAdmin, usePendingAnnouncementsAdmin } from "@/hooks/useAdmin";
+import { useAllAnnouncementsAdmin, useOrganizationsAdmin } from "@/hooks/useAdmin";
 
 const NAV_ITEMS = ["Announcements", "Organizations", "Users", "Reports"];
 
 export default function AdminPage() {
     const [activeTab, setActiveTab] = useState("Announcements");
 
-    // Fetch all organizations and announcements
-    const { organizations, isLoadingOrganizations } = useOrganizationsAdmin();
-    const { announcementsApproved, isLoadingAnnouncements } = useApprovedAnnouncementsAdmin();
-    const { announcementPending, isLoadingPendingAnnouncements } = usePendingAnnouncementsAdmin();
+    const { organizations,  isLoadingOrganizations } = useOrganizationsAdmin();
+    const { Announcement,  isLoadingAnnouncements } = useAllAnnouncementsAdmin();
 
-
-    if (isLoadingOrganizations || isLoadingAnnouncements || isLoadingPendingAnnouncements) {
+    if (isLoadingOrganizations || isLoadingAnnouncements) {
         return <p>Loading dashboard...</p>;
     }
 
-    // Quick stats
-    // Quick stats
     const totalUsers = 1247;
-    const approvedCount = announcementsApproved?.length ?? 0;
-    const pendingCount = announcementPending?.length ?? 0;
-    const totalAnnouncements = approvedCount + pendingCount;
-
-    const TotalOrganizations = organizations?.length ?? 0;
-    const pendingAnnouncementsCount = pendingCount;
+    const totalOrganizations = organizations?.length ?? 0;
+    const verifiedAnnouncements = Announcement?.filter(a => a.status === "approved").length ?? 0;
+    const pendingAnnouncementsCount = Announcement?.filter(a => a.status === "pending").length ?? 0;
 
     return (
         <section className="py-16 bg-background">
@@ -53,63 +43,52 @@ export default function AdminPage() {
                 {/* Quick Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <Card>
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Total Users</p>
-                                    <p className="text-2xl font-bold">{totalUsers.toLocaleString()}</p>
-                                </div>
-                                <Users className="w-8 h-8 text-primary" />
+                        <CardContent className="p-6 flex justify-between items-center">
+                            <div>
+                                <p className="text-sm text-muted-foreground">Total Users</p>
+                                <p className="text-2xl font-bold">{totalUsers.toLocaleString()}</p>
                             </div>
+                            <Users className="w-8 h-8 text-primary" />
                         </CardContent>
                     </Card>
 
                     <Card>
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Total Organizations</p>
-                                    <p className="text-2xl font-bold">{TotalOrganizations}</p>
-                                </div>
-                                <Building2 className="w-8 h-8 text-accent" />
+                        <CardContent className="p-6 flex justify-between items-center">
+                            <div>
+                                <p className="text-sm text-muted-foreground">Total Organizations</p>
+                                <p className="text-2xl font-bold">{totalOrganizations}</p>
                             </div>
+                            <Building2 className="w-8 h-8 text-accent" />
                         </CardContent>
                     </Card>
 
                     <Card>
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Verified Announcements</p>
-                                    <p className="text-2xl font-bold">{approvedCount}</p>
-                                </div>
-                                <FileText className="w-8 h-8 text-primary" />
+                        <CardContent className="p-6 flex justify-between items-center">
+                            <div>
+                                <p className="text-sm text-muted-foreground">Verified Announcements</p>
+                                <p className="text-2xl font-bold">{verifiedAnnouncements}</p>
                             </div>
+                            <FileText className="w-8 h-8 text-primary" />
                         </CardContent>
                     </Card>
 
                     <Card>
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Not Verified Announcements</p>
-                                    <p className="text-2xl font-bold text-red-600">{pendingCount}</p>
-                                </div>
-                                <AlertTriangle className="w-8 h-8 text-red-600" />
+                        <CardContent className="p-6 flex justify-between items-center">
+                            <div>
+                                <p className="text-sm text-muted-foreground">Pending Announcements</p>
+                                <p className="text-2xl font-bold text-red-600">{pendingAnnouncementsCount}</p>
                             </div>
+                            <AlertTriangle className="w-8 h-8 text-red-600" />
                         </CardContent>
                     </Card>
                 </div>
 
-                {(pendingAnnouncementsCount > 0 || pendingAnnouncementsCount > 0) && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <AlertTriangle className="w-6 h-6 text-red-600" />
-                            <p className="text-red-700 font-medium">
-                                Pending Actions Required: 
-                                {" ("}{pendingAnnouncementsCount}{") "}announcements pending approval
-                            </p>
-                        </div>
+                {pendingAnnouncementsCount > 0 && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8 flex items-center gap-3">
+                        <AlertTriangle className="w-6 h-6 text-red-600" />
+                        <p className="text-red-700 font-medium">
+                            Pending Actions Required: ({pendingAnnouncementsCount}) announcements Waiting  for approval
+                        </p>
                     </div>
                 )}
 
@@ -127,26 +106,19 @@ export default function AdminPage() {
                                 </TabsTrigger>
                             ))}
                         </TabsList>
-                        {/* Announcements */}
+
                         <TabsContent value="Announcements" className="mt-8">
-                            <AnnouncementsTable
-                                approvedAnnouncements={announcementsApproved}
-                                pendingAnnouncements={announcementPending}
-                            />
+                            <AnnouncementsTable announcements={Announcement ?? []} />
                         </TabsContent>
-                        {/* Organizations */}
+
                         <TabsContent value="Organizations" className="mt-8">
                             <OrganizationTable organizations={organizations ?? []} />
                         </TabsContent>
 
-                      
-
-                        {/* Users */}
                         <TabsContent value="Users" className="mt-8">
                             <UsersTable />
                         </TabsContent>
 
-                        {/* Reports */}
                         <TabsContent value="Reports" className="mt-8">
                             <ReportsTable />
                         </TabsContent>
