@@ -1,77 +1,59 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DataTable from "./DataTable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { Announcement } from "@/lib/types";
 
-// Mock announcements
-const initialPending = [
-    {
-        id: 1,
-        title: "System Maintenance",
-        date: "2024-02-01",
-        category: "Maintenance",
-        organization: "Tech Dept",
-        link: "https://example.com/maintenance",
-    },
-    {
-        id: 2,
-        title: "New Feature Release",
-        date: "2024-02-05",
-        category: "Release",
-        organization: "Product Team",
-        link: "https://example.com/new-feature",
-    },
-];
+interface AnnouncementsTableProps {
+    approvedAnnouncements: Announcement[];
+    pendingAnnouncements: Announcement[];
+}
 
-const initialApproved = [
-    {
-        id: 3,
-        title: "Holiday Schedule",
-        date: "2024-01-20",
-        category: "Notice",
-        organization: "HR Dept",
-        link: "https://example.com/holiday",
-    },
-];
+export default function AnnouncementsTable({ approvedAnnouncements, pendingAnnouncements }: AnnouncementsTableProps) {
+    const [pending, setPending] = useState(pendingAnnouncements);
+    const [approved, setApproved] = useState(approvedAnnouncements);
 
-export default function AnnouncementsTable() {
-    const [pending, setPending] = useState(initialPending);
-    const [approved, setApproved] = useState(initialApproved);
+    useEffect(() => {
+        setPending(pendingAnnouncements);
+        setApproved(approvedAnnouncements);
+    }, [pendingAnnouncements, approvedAnnouncements]);
 
     const handleApprove = (id: number) => {
-        const ann = pending.find((a) => a.id === id);
+        const ann = pending.find(a => a.id === id);
         if (ann) {
             setApproved([...approved, ann]);
-            setPending(pending.filter((a) => a.id !== id));
+            setPending(pending.filter(a => a.id !== id));
+            // TODO: Call API to approve
         }
     };
 
     const handleReject = (id: number) => {
-        setPending(pending.filter((a) => a.id !== id));
+        setPending(pending.filter(a => a.id !== id));
+        // TODO: Call API to reject
     };
 
     const handleDelete = (id: number) => {
-        setApproved(approved.filter((a) => a.id !== id));
+        setApproved(approved.filter(a => a.id !== id));
+        // TODO: Call API to delete
     };
 
     const pendingColumns = [
         { key: "title", label: "Title" },
-        { key: "category", label: "Category" },
-        { key: "organization", label: "Organization" },
-        { key: "date", label: "Date" },
+        { key: "category_name", label: "Category" },
+        { key: "organization_name", label: "Organization" },
+        {
+            key: "created_at",
+            label: "Date",
+            render: (a: Announcement) => a.created_at.split("T")[0], // format date
+        },
         {
             key: "link",
             label: "Link",
-            render: (a: typeof pending[0]) => (
-                <Link
-                    href={a.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                >
+            render: (a: Announcement) => (
+                <Link href={a.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                     Visit
                 </Link>
             ),
@@ -79,18 +61,10 @@ export default function AnnouncementsTable() {
         {
             key: "actions",
             label: "Actions",
-            render: (a: typeof pending[0]) => (
+            render: (a: Announcement) => (
                 <div className="flex gap-2">
-                    <Button
-                        size="sm"
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                        onClick={() => handleApprove(a.id)}
-                    >
-                        Approve
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleReject(a.id)}>
-                        Reject
-                    </Button>
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleApprove(a.id)}>Approve</Button>
+                    <Button size="sm" variant="destructive" onClick={() => handleReject(a.id)}>Reject</Button>
                 </div>
             ),
         },
@@ -98,19 +72,18 @@ export default function AnnouncementsTable() {
 
     const approvedColumns = [
         { key: "title", label: "Title" },
-        { key: "category", label: "Category" },
-        { key: "organization", label: "Organization" },
-        { key: "date", label: "Date" },
+        { key: "category_name", label: "Category" },
+        { key: "organization_name", label: "Organization" },
+        {
+            key: "created_at",
+            label: "Date",
+            render: (a: Announcement) => a.created_at.split("T")[0], // format date
+        },
         {
             key: "link",
             label: "Link",
-            render: (a: typeof approved[0]) => (
-                <Link
-                    href={a.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                >
+            render: (a: Announcement) => (
+                <Link href={a.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                     Visit
                 </Link>
             ),
@@ -118,14 +91,8 @@ export default function AnnouncementsTable() {
         {
             key: "actions",
             label: "Actions",
-            render: (a: typeof approved[0]) => (
-                <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDelete(a.id)}
-                >
-                    Delete
-                </Button>
+            render: (a: Announcement) => (
+                <Button size="sm" variant="destructive" onClick={() => handleDelete(a.id)}>Delete</Button>
             ),
         },
     ];
@@ -139,15 +106,13 @@ export default function AnnouncementsTable() {
                 </Button>
             </div>
 
-            {/* Pending Announcements */}
             <div>
-                <h3 className="text-lg font-semibold mb-2">Pending Announcements</h3>
+                <h3 className="text-lg font-semibold mb-2">Pending Announcements ({pending.length})</h3>
                 <DataTable columns={pendingColumns} data={pending} />
             </div>
 
-            {/* Approved Announcements */}
             <div>
-                <h3 className="text-lg font-semibold mb-2">Approved Announcements</h3>
+                <h3 className="text-lg font-semibold mb-2">Approved Announcements ({approved.length})</h3>
                 <DataTable columns={approvedColumns} data={approved} />
             </div>
         </div>

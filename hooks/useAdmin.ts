@@ -1,36 +1,54 @@
 import { adminService } from "@/services/admin.service";
 import { useQuery } from "@tanstack/react-query";
+import { Announcement } from "@/lib/types";
 
-export const useOrganizationsPending = () => {
-    const {
-        data,
-        isLoading: isLoadingOrganizationsPending,
-    } = useQuery({
-        queryKey: ["organizations-pending"],
-        queryFn: () => adminService.getAllOrganizationsPending(),
+
+export const useOrganizationsAdmin = () => {
+  // Get all organizations
+  const { data: organizations, isLoading: isLoadingOrganizations } = useQuery({
+    queryKey: ["organizations-admin"],
+      queryFn: () => adminService.getAllOrganizationsAdmin(),
+    refetchOnWindowFocus: false,
+  });
+
+  return {
+    organizations,
+    isLoadingOrganizations,
+  };
+};
+
+
+export const useApprovedAnnouncementsAdmin = () => {
+    const { data, isLoading } = useQuery<Announcement[] | null>({
+        queryKey: ["announcements-admin"],
+        queryFn: () => adminService.getAnnouncementsApproved(),
         refetchOnWindowFocus: false,
     });
 
-    // Only keep unverified
-    const organizationsPending = data?.filter((org) => !org.verified) ?? [];
+    // Ensure data is always an array before filtering
+    const announcementsArray: Announcement[] = Array.isArray(data) ? data : [];
+
+    const announcementsApproved = announcementsArray.filter(
+        (ann) => ann.status === "approved"
+    );
 
     return {
-        organizationsPending,
-        isLoadingOrganizationsPending,
+        announcementsApproved,
+        isLoadingAnnouncements: isLoading,
     };
 };
 
-export const useOrganizationsVerified = () => { 
-    const {
-        data,
-        isLoading: isLoadingOrganizationsVerified } = useQuery({
-            queryKey: ["organizations-verified"],
-            queryFn: () => adminService.getAllOrganizationsVerified(),
-            refetchOnWindowFocus: false,
-        });
-    
+
+export const usePendingAnnouncementsAdmin = () => {
+    const { data:Announcement, isLoading } = useQuery({
+        queryKey: ["pending-announcements-admin"],
+        queryFn: () => adminService.getAnnouncementsPending(),
+        refetchOnWindowFocus: false,
+    });
+
     return {
-        organizationsVerified: data,
-        isLoadingOrganizationsVerified,
-    }
+        announcementPending: Announcement ?? [],
+        isLoadingPendingAnnouncements: isLoading,
+    };
 }
+

@@ -25,14 +25,16 @@ interface DataTableProps<T> {
 
 export default function DataTable<T>({
     columns,
-    data,
-    rowsPerPage = 6, // default 6 rows per page
+    data = [], // default to empty array
+    rowsPerPage = 6,
 }: DataTableProps<T>) {
     const [page, setPage] = useState(0);
 
-    const totalPages = Math.ceil(data.length / rowsPerPage);
+    const safeData = Array.isArray(data) ? data : [];
+    const totalPages = Math.ceil(safeData.length / rowsPerPage);
     const startIndex = page * rowsPerPage;
-    const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
+    const paginatedData = safeData.slice(startIndex, startIndex + rowsPerPage);
+
 
     return (
         <div className="space-y-4">
@@ -84,3 +86,4 @@ export default function DataTable<T>({
         </div>
     );
 }
+

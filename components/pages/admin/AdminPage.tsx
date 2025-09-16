@@ -12,27 +12,32 @@ import AnnouncementsTable from "./AnnouncementsTable";
 import ReportsTable from "./ReportsTable";
 
 // Import your hooks
-import { useOrganizationsVerified, useOrganizationsPending } from "@/hooks/useAdmin";
+import { useApprovedAnnouncementsAdmin, useOrganizationsAdmin, usePendingAnnouncementsAdmin } from "@/hooks/useAdmin";
 
-const NAV_ITEMS = ["Organizations", "Announcements", "Users", "Reports"];
+const NAV_ITEMS = ["Announcements", "Organizations", "Users", "Reports"];
 
 export default function AdminPage() {
-    const [activeTab, setActiveTab] = useState("Organizations");
+    const [activeTab, setActiveTab] = useState("Announcements");
 
-    // fetch organizations
-    const { organizationsVerified, isLoadingOrganizationsVerified } = useOrganizationsVerified();
-    const { organizationsPending, isLoadingOrganizationsPending } = useOrganizationsPending();
+    // Fetch all organizations and announcements
+    const { organizations, isLoadingOrganizations } = useOrganizationsAdmin();
+    const { announcementsApproved, isLoadingAnnouncements } = useApprovedAnnouncementsAdmin();
+    const { announcementPending, isLoadingPendingAnnouncements } = usePendingAnnouncementsAdmin();
 
-    if (isLoadingOrganizationsVerified || isLoadingOrganizationsPending) {
+
+    if (isLoadingOrganizations || isLoadingAnnouncements || isLoadingPendingAnnouncements) {
         return <p>Loading dashboard...</p>;
     }
 
-    // stats
-    const verifiedCount = (organizationsVerified ?? []).filter((org) => org.verified).length;
-    const notVerifiedCount = (organizationsPending ?? []).filter((org) => !org.verified).length;
-    const totalUsers = 1247; // replace with real API later
-    const totalAnnouncements = 156; // replace with real API later
-    const pendingAnnouncements = 3; // replace with real API later
+    // Quick stats
+    // Quick stats
+    const totalUsers = 1247;
+    const approvedCount = announcementsApproved?.length ?? 0;
+    const pendingCount = announcementPending?.length ?? 0;
+    const totalAnnouncements = approvedCount + pendingCount;
+
+    const TotalOrganizations = organizations?.length ?? 0;
+    const pendingAnnouncementsCount = pendingCount;
 
     return (
         <section className="py-16 bg-background">
@@ -63,8 +68,8 @@ export default function AdminPage() {
                         <CardContent className="p-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-muted-foreground">Verified Organizations</p>
-                                    <p className="text-2xl font-bold">{verifiedCount}</p>
+                                    <p className="text-sm text-muted-foreground">Total Organizations</p>
+                                    <p className="text-2xl font-bold">{TotalOrganizations}</p>
                                 </div>
                                 <Building2 className="w-8 h-8 text-accent" />
                             </div>
@@ -75,8 +80,8 @@ export default function AdminPage() {
                         <CardContent className="p-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-muted-foreground">Total Announcements</p>
-                                    <p className="text-2xl font-bold">{totalAnnouncements}</p>
+                                    <p className="text-sm text-muted-foreground">Verified Announcements</p>
+                                    <p className="text-2xl font-bold">{approvedCount}</p>
                                 </div>
                                 <FileText className="w-8 h-8 text-primary" />
                             </div>
@@ -87,8 +92,8 @@ export default function AdminPage() {
                         <CardContent className="p-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-muted-foreground">Not Verified Organizations</p>
-                                    <p className="text-2xl font-bold text-red-600">{notVerifiedCount}</p>
+                                    <p className="text-sm text-muted-foreground">Not Verified Announcements</p>
+                                    <p className="text-2xl font-bold text-red-600">{pendingCount}</p>
                                 </div>
                                 <AlertTriangle className="w-8 h-8 text-red-600" />
                             </div>
@@ -96,14 +101,13 @@ export default function AdminPage() {
                     </Card>
                 </div>
 
-                {/* Pending Actions */}
-                {(notVerifiedCount > 0 || pendingAnnouncements > 0) && (
+                {(pendingAnnouncementsCount > 0 || pendingAnnouncementsCount > 0) && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <AlertTriangle className="w-6 h-6 text-red-600" />
                             <p className="text-red-700 font-medium">
-                                Pending Actions Required: {notVerifiedCount} organizations awaiting verification &{" "}
-                                {pendingAnnouncements} announcements pending approval
+                                Pending Actions Required: 
+                                {" ("}{pendingAnnouncementsCount}{") "}announcements pending approval
                             </p>
                         </div>
                     </div>
@@ -113,7 +117,7 @@ export default function AdminPage() {
                 <div className="bg-white rounded-lg shadow p-6">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="w-full bg-[#F4F9FF] h-auto p-2 gap-1.5 flex-wrap">
-                            {NAV_ITEMS.map((item) => (
+                            {NAV_ITEMS.map(item => (
                                 <TabsTrigger
                                     key={item}
                                     value={item}
@@ -123,19 +127,19 @@ export default function AdminPage() {
                                 </TabsTrigger>
                             ))}
                         </TabsList>
-
-                        {/* Organizations */}
-                        <TabsContent value="Organizations" className="mt-8">
-                            <OrganizationTable
-                                organizations={organizationsVerified ?? []}           
-                                organizationsPending={organizationsPending ?? []} 
-                            />
-                        </TabsContent>
-
                         {/* Announcements */}
                         <TabsContent value="Announcements" className="mt-8">
-                            <AnnouncementsTable />
+                            <AnnouncementsTable
+                                approvedAnnouncements={announcementsApproved}
+                                pendingAnnouncements={announcementPending}
+                            />
                         </TabsContent>
+                        {/* Organizations */}
+                        <TabsContent value="Organizations" className="mt-8">
+                            <OrganizationTable organizations={organizations ?? []} />
+                        </TabsContent>
+
+                      
 
                         {/* Users */}
                         <TabsContent value="Users" className="mt-8">
