@@ -14,6 +14,7 @@ interface OrganizationTableProps {
 
 export default function OrganizationTable({ organizations }: OrganizationTableProps) {
     const [orgs, setOrgs] = useState(organizations);
+    
 
     // modal state
     const [modalOpen, setModalOpen] = useState(false);
@@ -47,6 +48,8 @@ export default function OrganizationTable({ organizations }: OrganizationTablePr
         deleteOrganization(id, {
             onSuccess: () => setOrgs(prev => prev.filter(org => org.id !== id))
         });
+
+
     };
 
     const columns = [

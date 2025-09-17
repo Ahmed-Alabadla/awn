@@ -26,6 +26,8 @@ export const useDeleteOrganization = () => {
         mutationFn: (id: number) => adminService.deleteOrganization(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["organizations-admin-delete"] });
+            queryClient.invalidateQueries({ queryKey: ["announcements-admin"] });
+
             toast.success("Organization deleted successfully!");
         }
         ,
