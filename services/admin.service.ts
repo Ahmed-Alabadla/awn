@@ -5,16 +5,12 @@ import { Organization, Announcement } from "@/lib/types";
 export const adminService = {
     
     getAllOrganizationsAdmin: async (): Promise<Organization[]> => {
-        const response = await api.get("/awn/api/organizations");
+        const response = await api.get("/awn/api/admin/organizations/");
         return response.data;
     },
 
     getAllAnnouncements: async (): Promise<Announcement[]> => { 
         const response = await api.get("/awn/api/announcements");
-        return response.data.data;
-    },
-    getAnnouncementsPending: async (): Promise<Announcement[]> => { 
-        const response = await api.get("/awn/api/announcements/pending/");
         return response.data.data;
     },
     deleteAnnouncement: async (id: number): Promise<void> => {
@@ -32,4 +28,21 @@ export const adminService = {
         });
         return response.data;
     },
+
+    deleteOrganization: async (id: number): Promise<void> => {
+        await api.delete(`/awn/api/organizations/delete/${id}/`);
+    },
+    blockAndUnblockOrganization: async (
+        id: number,
+        block_reason: string
+    ): Promise<void> => {
+        const response = await api.patch(
+            `/awn/api/organization/${id}/block-unblock/`,
+            { block_reason } // 👈 always include
+        );
+        return response.data;
+    },
+
+
+
 };

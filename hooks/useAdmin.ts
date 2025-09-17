@@ -20,6 +20,39 @@ export const useOrganizationsAdmin = () => {
 };
 
 
+export const useDeleteOrganization = () => {
+    const queryClient = useQueryClient();   
+    return useMutation({
+        mutationFn: (id: number) => adminService.deleteOrganization(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["organizations-admin-delete"] });
+            toast.success("Organization deleted successfully!");
+        }
+        ,
+        onError: () => {
+            toast.error("Failed to delete organization. Please try again.");
+        },
+    });
+}
+
+export const useBlockUnblockOrganization = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, block_reason }: { id: number; block_reason: string }) =>
+            adminService.blockAndUnblockOrganization(id, block_reason),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["organizations-admin-delete"] });
+            toast.success("Organization status updated successfully!");
+        },
+        onError: () => {
+            toast.error("Failed to update organization status. Please try again.");
+        },
+    });
+};
+
+
+
+
 export const useAllAnnouncementsAdmin = () => {
     const { data: Announcement, isLoading } = useQuery<Announcement[] | null>({
         queryKey: ["announcements-admin"],
@@ -35,18 +68,6 @@ export const useAllAnnouncementsAdmin = () => {
 };
 
 
-export const usePendingAnnouncementsAdmin = () => {
-    const { data:Announcement, isLoading } = useQuery({
-        queryKey: ["pending-announcements-admin"],
-        queryFn: () => adminService.getAnnouncementsPending(),
-        refetchOnWindowFocus: false,
-    });
-
-    return {
-        announcementPending: Announcement ?? [],
-        isLoadingPendingAnnouncements: isLoading,
-    };
-}
 
 
 export const useDeleteAnnouncement = () => {
