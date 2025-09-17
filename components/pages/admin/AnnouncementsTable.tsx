@@ -20,6 +20,8 @@ import {
 interface Props {
     announcements: Announcement[];
 }
+type Status = "approved" | "rejected" | "pending" | "all";
+
 
 export default function AnnouncementsTable({ announcements }: Props) {
     const [data, setData] = useState<Announcement[]>(announcements);
@@ -178,7 +180,8 @@ export default function AnnouncementsTable({ announcements }: Props) {
                     className="w-64"
                 />
 
-                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as any)}>
+                <Select value={statusFilter}
+                    onValueChange={(value: Status) => setStatusFilter(value)}>
                     <SelectTrigger className="w-40">
                         <SelectValue placeholder="Filter by Status" />
                     </SelectTrigger>
