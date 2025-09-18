@@ -12,10 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 
 type Column<T> = {
-    key: keyof T | string;
+    key: keyof T | string; // allow extra keys
     label: string;
     render?: (row: T) => React.ReactNode;
-};
+}
 
 interface DataTableProps<T> {
     columns: Column<T>[];
@@ -23,9 +23,9 @@ interface DataTableProps<T> {
     rowsPerPage?: number;
 }
 
-export default function DataTable<T>({
+export default function DataTable<T extends object>({
     columns,
-    data = [], // default to empty array
+    data = [],
     rowsPerPage = 10,
 }: DataTableProps<T>) {
     const [page, setPage] = useState(0);
@@ -35,14 +35,13 @@ export default function DataTable<T>({
     const startIndex = page * rowsPerPage;
     const paginatedData = safeData.slice(startIndex, startIndex + rowsPerPage);
 
-
     return (
         <div className="space-y-4">
             <Table>
                 <TableHeader>
                     <TableRow>
                         {columns.map((col) => (
-                            <TableHead key={col.key.toString()}>{col.label}</TableHead>
+                            <TableHead key={col.key as string}>{col.label}</TableHead>
                         ))}
                     </TableRow>
                 </TableHeader>
@@ -51,7 +50,7 @@ export default function DataTable<T>({
                         <TableRow key={idx}>
                             {columns.map((col) => (
                                 <TableCell key={col.key.toString()}>
-                                    {col.render ? col.render(row) : (row as any)[col.key]}
+                                    {col.render ? col.render(row) : col.key in row ? String(row[col.key as keyof T]) : null}
                                 </TableCell>
                             ))}
                         </TableRow>
@@ -86,4 +85,3 @@ export default function DataTable<T>({
         </div>
     );
 }
-
