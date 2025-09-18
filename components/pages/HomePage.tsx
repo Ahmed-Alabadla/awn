@@ -1,8 +1,8 @@
 "use client";
+import AdminPage from "./admin/AdminPage";
 import AnnouncementPage from "./announcements/AnnouncementPage";
 import LandingPage from "./landing/LandingPage";
 import OrganizationPage from "./OrganizationPage";
-import AdminPage from "./AdminPage";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function HomePage() {

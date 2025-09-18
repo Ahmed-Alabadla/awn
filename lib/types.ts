@@ -15,8 +15,7 @@ export interface Announcement {
   category_name: string;
   organization_name: string;
   creator_name: string;
-  status: string;
-  admin_notes: string;
+  status?: "pending" | "approved" | "rejected";  admin_notes: string;
   created_at: Date;
   updated_at: Date;
   image: string;
@@ -46,7 +45,7 @@ export interface Organization {
   organization_name: string;
   profile_image: string | null;
   description: string;
-  website?: string;
+  website: string ;
   location?: string;
   verified: boolean;
   is_active: boolean;
